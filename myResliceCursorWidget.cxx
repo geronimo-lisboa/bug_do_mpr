@@ -16,7 +16,7 @@ PURPOSE.  See the above copyright notice for more information.
 #include <iostream>
 #include "vtkResliceCursorLineRepresentation.h"
 #include "vtkCommand.h"
-#include "vtkResliceCursor.h"
+#include "myResliceCursor.h"
 #include "vtkCallbackCommand.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkObjectFactory.h"

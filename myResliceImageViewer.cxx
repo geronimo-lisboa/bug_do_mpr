@@ -23,7 +23,7 @@
 #include "vtkResliceCursorActor.h"
 #include "vtkResliceCursorPolyDataAlgorithm.h"
 #include "vtkPlane.h"
-#include "vtkResliceCursor.h"
+#include "myResliceCursor.h"
 #include "vtkImageData.h"
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkInteractorStyleImage.h"
@@ -90,16 +90,12 @@ myResliceImageViewer::myResliceImageViewer()
 
   this->ResliceCursorWidget = myResliceCursorWidget::New();
 
-  vtkSmartPointer< vtkResliceCursor > resliceCursor =
-    vtkSmartPointer< vtkResliceCursor >::New();
+  vtkSmartPointer< myResliceCursor > resliceCursor = vtkSmartPointer< myResliceCursor >::New();
   resliceCursor->SetThickMode(0);
   resliceCursor->SetThickness(10, 10, 10);
 
-  vtkSmartPointer< vtkResliceCursorLineRepresentation >
-    resliceCursorRep = vtkSmartPointer<
-      vtkResliceCursorLineRepresentation >::New();
-  resliceCursorRep->GetResliceCursorActor()->
-      GetCursorAlgorithm()->SetResliceCursor(resliceCursor);
+  vtkSmartPointer< vtkResliceCursorLineRepresentation > resliceCursorRep = vtkSmartPointer< vtkResliceCursorLineRepresentation >::New();
+  resliceCursorRep->GetResliceCursorActor()->GetCursorAlgorithm()->SetResliceCursor(resliceCursor);
   resliceCursorRep->GetResliceCursorActor()->
       GetCursorAlgorithm()->SetReslicePlaneNormal(this->SliceOrientation);
   this->ResliceCursorWidget->SetRepresentation(resliceCursorRep);
@@ -134,7 +130,7 @@ myResliceImageViewer::~myResliceImageViewer()
 //----------------------------------------------------------------------------
 void myResliceImageViewer::SetThickMode( int t )
 {
-  vtkSmartPointer< vtkResliceCursor > rc = this->GetResliceCursor();
+	vtkSmartPointer< myResliceCursor > rc = this->GetResliceCursor();
 
   if (t == this->GetThickMode())
     {
@@ -177,7 +173,7 @@ void myResliceImageViewer::SetThickMode( int t )
 }
 
 //----------------------------------------------------------------------------
-void myResliceImageViewer::SetResliceCursor( vtkResliceCursor * rc )
+void myResliceImageViewer::SetResliceCursor(myResliceCursor * rc)
 {
   vtkResliceCursorRepresentation *rep =
     vtkResliceCursorRepresentation::SafeDownCast(
@@ -421,7 +417,7 @@ void myResliceImageViewer::Render()
 }
 
 //----------------------------------------------------------------------------
-vtkResliceCursor * myResliceImageViewer::GetResliceCursor()
+myResliceCursor * myResliceImageViewer::GetResliceCursor()
 {
   if (vtkResliceCursorRepresentation *rep =
         vtkResliceCursorRepresentation::SafeDownCast(

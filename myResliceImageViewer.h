@@ -22,7 +22,7 @@
 // also default to the behaviour of vtkImageViewer2 if the Reslice mode is
 // set to RESLICE_AXIS_ALIGNED.
 // .SECTION see also
-// vtkResliceCursor vtkResliceCursorWidget vtkResliceCursorRepresentation
+
 
 #ifndef myResliceImageViewer_h
 #define myResliceImageViewer_h
@@ -31,7 +31,7 @@
 #include "vtkImageViewer2.h"
 
 class myResliceCursorWidget;
-class vtkResliceCursor;
+class myResliceCursor;
 class vtkScalarsToColors;
 class vtkBoundedPlanePointPlacer;
 class myResliceImageViewerMeasurements;
@@ -90,8 +90,8 @@ public:
 
   // Description:
   // Set/Get the reslice cursor.
-  vtkResliceCursor * GetResliceCursor();
-  void SetResliceCursor( vtkResliceCursor * rc );
+  myResliceCursor * GetResliceCursor();
+  void SetResliceCursor(myResliceCursor * rc);
 
   // Description:
   // Set the lookup table

@@ -12,7 +12,7 @@
 #include <memory>
 #include "myResliceImageViewer.h"
 #include <array>
-#include <vtkResliceCursor.h>
+#include "myResliceCursor.h"
 #include <vtkWidgetRepresentation.h>
 #include "myResliceCursorWidget.h"
 #include <vtkResliceCursorLineRepresentation.h>
@@ -63,14 +63,14 @@ class MPRView : public IMPRView{
 private:
 	vtkSmartPointer<myResliceImageViewer> resliceViewer;
 	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
-	vtkSmartPointer<vtkResliceCursor> sharedCursor;
+	vtkSmartPointer<myResliceCursor> sharedCursor;
 	vtkResliceCursorCallback *resliceCallback;
 public:
 	MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id);
 	vtkSmartPointer<myResliceImageViewer> GetmyResliceImageViewer();
 	void Atualizar();
 	~MPRView(){};
-	void SetCallbacks(vtkSmartPointer<vtkResliceCursor> _sharedCursor, vtkSmartPointer<vtkResliceCursorCallback> rcbk);
+	void SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<vtkResliceCursorCallback> rcbk);
 };
 
 class Sistema{
@@ -157,7 +157,7 @@ void MPRView::Atualizar(){
 	resliceViewer->Render();
 }
 
-void MPRView::SetCallbacks(vtkSmartPointer<vtkResliceCursor> _sharedCursor, vtkSmartPointer<vtkResliceCursorCallback> rcbk){
+void MPRView::SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<vtkResliceCursorCallback> rcbk){
 	resliceCallback = rcbk;
 	sharedCursor = _sharedCursor;
 	resliceViewer->SetResliceCursor(sharedCursor);

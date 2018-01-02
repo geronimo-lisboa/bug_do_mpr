@@ -18,7 +18,7 @@
 // the visibility of the measurements based on whether the resliced image
 // is the same orientation as when the measurement was initially placed.
 // .SECTION see also
-// vtkResliceCursor vtkResliceCursorWidget vtkResliceCursorRepresentation
+
 
 #ifndef myResliceImageViewerMeasurements_h
 #define myResliceImageViewerMeasurements_h

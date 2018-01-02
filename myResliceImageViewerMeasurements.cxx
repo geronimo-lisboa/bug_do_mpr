@@ -39,7 +39,7 @@
 #include "vtkResliceCursorActor.h"
 #include "vtkResliceCursorPolyDataAlgorithm.h"
 #include "vtkPlane.h"
-#include "vtkResliceCursor.h"
+#include "myResliceCursor.h"
 #include "vtkImageData.h"
 #include "vtkObjectFactory.h"
 #include "vtkRenderWindow.h"
