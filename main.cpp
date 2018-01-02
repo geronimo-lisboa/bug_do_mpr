@@ -20,6 +20,8 @@
 #include <boost/lexical_cast.hpp>
 #include <vtkResliceCursorActor.h>
 #include <vtkResliceCursorPolyDataAlgorithm.h>
+#include <vector>
+#include <vtkCommand.h>
 
 using namespace std;
 using boost::lexical_cast;
@@ -35,21 +37,37 @@ public:
 	virtual ~IMPRView(){};
 };
 
+class vtkResliceCursorCallback : public vtkCommand{
+private:
+	vector<shared_ptr<IMPRView>> MPRs;
+public:
+	static vtkResliceCursorCallback *New(){
+		return new vtkResliceCursorCallback();
+	}
+	void AddMPR(shared_ptr<IMPRView> m){
+		MPRs.push_back(m);
+	}
+	void Execute(vtkObject * caller, unsigned long event, void* calldata);
+};
+
 class MPRView : public IMPRView{
 private:
 	vtkSmartPointer<vtkResliceImageViewer> resliceViewer;
 	vtkSmartPointer<vtkImageData> imagem;
 	vtkSmartPointer<vtkResliceCursor> sharedCursor;
+	vtkResliceCursorCallback *resliceCallback;
 public:
 	MPRView(vtkSmartPointer<vtkImageData> img, int _id);
 	vtkSmartPointer<vtkResliceImageViewer> GetVtkResliceImageViewer();
 	void Atualizar();
 	~MPRView(){};
+	void SetCallbacks(vtkSmartPointer<vtkResliceCursor> _sharedCursor, vtkSmartPointer<vtkResliceCursorCallback> rcbk);
 };
 
 class Sistema{
 private:
-	array<unique_ptr<MPRView>, 3> mprs;
+	vtkSmartPointer<vtkResliceCursorCallback> resliceCursorCallback;
+	array<shared_ptr<MPRView>, 3> mprs;
 	vtkSmartPointer<vtkImageData> imagem;
 public:
 	Sistema(vtkSmartPointer<vtkImageData> img);
@@ -104,21 +122,38 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> img, int _id){
 }
 
 vtkSmartPointer<vtkResliceImageViewer> MPRView::GetVtkResliceImageViewer(){
-	cout << __FUNCTION__ << endl;
-	return nullptr;
+	return this->resliceViewer;
 }
 
 void MPRView::Atualizar(){
-	cout << __FUNCTION__ << endl;
+	resliceViewer->Render();
 }
 
+void MPRView::SetCallbacks(vtkSmartPointer<vtkResliceCursor> _sharedCursor, vtkSmartPointer<vtkResliceCursorCallback> rcbk){
+	resliceCallback = rcbk;
+	sharedCursor = _sharedCursor;
+	resliceViewer->SetResliceCursor(sharedCursor);
+	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceThicknessChangedEvent, resliceCallback);
+	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResetCursorEvent, resliceCallback);
+	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::WindowLevelEvent, resliceCallback);
+	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceAxesChangedEvent, resliceCallback);
+}
 
 Sistema::Sistema(vtkSmartPointer<vtkImageData> img){
 	imagem = img;
-	mprs[0] = make_unique<MPRView>(imagem, 0);
-	mprs[1] = make_unique<MPRView>(imagem, 1);
-	mprs[2] = make_unique<MPRView>(imagem, 2);
-	mprs[0]->Atualizar();
-	void* v = mprs[0]->GetVtkResliceImageViewer();
+	mprs[0] = make_shared<MPRView>(imagem, 0);
+	mprs[1] = make_shared<MPRView>(imagem, 1);
+	mprs[2] = make_shared<MPRView>(imagem, 2);
+	resliceCursorCallback = vtkSmartPointer<vtkResliceCursorCallback>::New();
+	for (std::shared_ptr<MPRView> m : mprs){
+		m->SetCallbacks(mprs[0]->GetVtkResliceImageViewer()->GetResliceCursor(),  resliceCursorCallback);
+		resliceCursorCallback->AddMPR(m);
+	}
 }
 
+void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long event, void* calldata){
+	cout << __FUNCTION__ << endl;
+	for (shared_ptr<IMPRView> m : MPRs){
+		m->Atualizar();
+	}
+}
