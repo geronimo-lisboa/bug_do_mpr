@@ -12,20 +12,36 @@
 #include <memory>
 #include <vtkResliceImageViewer.h>
 #include <array>
+#include <vtkResliceCursor.h>
+#include <vtkWidgetRepresentation.h>
+#include <vtkResliceCursorWidget.h>
+#include <vtkResliceCursorLineRepresentation.h>
+#include <vtkImageReslice.h>
+#include <boost/lexical_cast.hpp>
+#include <vtkResliceCursorActor.h>
+#include <vtkResliceCursorPolyDataAlgorithm.h>
 
 using namespace std;
-
-vtkSmartPointer<vtkRenderWindow> CreateDummyScreen();
+using boost::lexical_cast;
+using boost::bad_lexical_cast;
 
 class IMPRView{
+protected:
+	int id;
 public:
+	int GetId(){ return id; }
 	virtual vtkSmartPointer<vtkResliceImageViewer> GetVtkResliceImageViewer() = 0;
 	virtual void Atualizar() = 0;
 	virtual ~IMPRView(){};
 };
 
 class MPRView : public IMPRView{
+private:
+	vtkSmartPointer<vtkResliceImageViewer> resliceViewer;
+	vtkSmartPointer<vtkImageData> imagem;
+	vtkSmartPointer<vtkResliceCursor> sharedCursor;
 public:
+	MPRView(vtkSmartPointer<vtkImageData> img, int _id);
 	vtkSmartPointer<vtkResliceImageViewer> GetVtkResliceImageViewer();
 	void Atualizar();
 	~MPRView(){};
@@ -47,9 +63,44 @@ int main(int argc, char** argv){
 	vtkSmartPointer<vtkImageImport> imagemVtk = CreateVTKImage(imagemItk);
 	//Cria o sistema
 	unique_ptr<Sistema> sistema = make_unique<Sistema>(imagemVtk->GetOutput());
-	vtkSmartPointer<vtkRenderWindow> dummyWindow = CreateDummyScreen();
-	dummyWindow->GetInteractor()->Start();
+	//A tela dummy
+	vtkSmartPointer<vtkRenderer> rendererDummy = vtkSmartPointer<vtkRenderer>::New();
+	vtkSmartPointer<vtkRenderWindow> renderWindowDummy = vtkSmartPointer<vtkRenderWindow>::New();
+	renderWindowDummy->AddRenderer(rendererDummy);
+	vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractorDummy = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+	renderWindowDummy->SetInteractor(renderWindowInteractorDummy);
+	renderWindowInteractorDummy->Initialize();
+	renderWindowInteractorDummy->Start();
+	//Fim do sistema
 	return EXIT_SUCCESS;
+}
+
+MPRView::MPRView(vtkSmartPointer<vtkImageData> img, int _id){
+	id = _id;
+	imagem = img;
+	resliceViewer = vtkSmartPointer<vtkResliceImageViewer>::New();
+	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+	renderWindow->AddRenderer(renderer);
+	vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+	interactor->SetRenderWindow(renderWindow);
+	resliceViewer->SetRenderWindow(renderWindow);
+	resliceViewer->SetupInteractor(interactor);
+	resliceViewer->SetResliceModeToOblique();
+	resliceViewer->SetInputData(imagem);
+	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
+	vtkResliceCursorLineRepresentation *tl = vtkResliceCursorLineRepresentation::SafeDownCast(r);
+	vtkImageReslice *thickSlabReslice = vtkImageReslice::SafeDownCast(tl->GetReslice());
+	thickSlabReslice->SetSlabModeToMax();
+	thickSlabReslice->SetSlabNumberOfSlices(5);
+	vtkResliceCursorLineRepresentation *cursorRepresentation = vtkResliceCursorLineRepresentation::SafeDownCast(
+		resliceViewer->GetResliceCursorWidget()->GetRepresentation());
+	resliceViewer->GetResliceCursorWidget()->ManageWindowLevelOff();
+	cursorRepresentation->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(id);
+
+	string nomeDaTela = "mpr " + lexical_cast<string>(id);
+	renderWindow->SetWindowName(nomeDaTela.c_str());
+	renderWindow->Render();
 }
 
 vtkSmartPointer<vtkResliceImageViewer> MPRView::GetVtkResliceImageViewer(){
@@ -64,18 +115,10 @@ void MPRView::Atualizar(){
 
 Sistema::Sistema(vtkSmartPointer<vtkImageData> img){
 	imagem = img;
-	mprs[0] = make_unique<MPRView>();
-	mprs[1] = make_unique<MPRView>();
-	mprs[2] = make_unique<MPRView>();
+	mprs[0] = make_unique<MPRView>(imagem, 0);
+	mprs[1] = make_unique<MPRView>(imagem, 1);
+	mprs[2] = make_unique<MPRView>(imagem, 2);
 	mprs[0]->Atualizar();
 	void* v = mprs[0]->GetVtkResliceImageViewer();
 }
 
-vtkSmartPointer<vtkRenderWindow> CreateDummyScreen(){
-	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-	vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
-	renderWindow->AddRenderer(renderer);
-	vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-	renderWindow->SetInteractor(renderWindowInteractor);
-	return renderWindow;
-}
