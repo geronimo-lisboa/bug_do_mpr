@@ -17,7 +17,7 @@ set(SDL2_LIBRARY "C:/Program Files (x86)/SDL2/lib/SDL2.lib")
 include_directories(${SDL2_INCLUDE_DIR})
 # Find SDL
 
-file(GLOB my_source_files "*.h" "*.cpp")
+file(GLOB my_source_files "*.h" "*.cpp" "*.cxx")
 add_executable(teste_mpr ${my_source_files} )     
 
 target_link_libraries(teste_mpr ${ITK_LIBRARIES} ${VTK_LIBRARIES}  ${SDL2_LIBRARY})

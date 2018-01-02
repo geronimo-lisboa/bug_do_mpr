@@ -10,7 +10,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <memory>
-#include <vtkResliceImageViewer.h>
+#include "myResliceImageViewer.h"
 #include <array>
 #include <vtkResliceCursor.h>
 #include <vtkWidgetRepresentation.h>
@@ -35,7 +35,7 @@ protected:
 	int id;
 public:
 	int GetId(){ return id; }
-	virtual vtkSmartPointer<vtkResliceImageViewer> GetVtkResliceImageViewer() = 0;
+	virtual vtkSmartPointer<myResliceImageViewer> GetmyResliceImageViewer() = 0;
 	virtual void Atualizar() = 0;
 	virtual ~IMPRView(){};
 };
@@ -58,13 +58,13 @@ public:
 
 class MPRView : public IMPRView{
 private:
-	vtkSmartPointer<vtkResliceImageViewer> resliceViewer;
+	vtkSmartPointer<myResliceImageViewer> resliceViewer;
 	vtkSmartPointer<vtkImageData> imagem;
 	vtkSmartPointer<vtkResliceCursor> sharedCursor;
 	vtkResliceCursorCallback *resliceCallback;
 public:
 	MPRView(vtkSmartPointer<vtkImageData> img, int _id);
-	vtkSmartPointer<vtkResliceImageViewer> GetVtkResliceImageViewer();
+	vtkSmartPointer<myResliceImageViewer> GetmyResliceImageViewer();
 	void Atualizar();
 	~MPRView(){};
 	void SetCallbacks(vtkSmartPointer<vtkResliceCursor> _sharedCursor, vtkSmartPointer<vtkResliceCursorCallback> rcbk);
@@ -108,7 +108,7 @@ int main(int argc, char** argv){
 MPRView::MPRView(vtkSmartPointer<vtkImageData> img, int _id){
 	id = _id;
 	imagem = img;
-	resliceViewer = vtkSmartPointer<vtkResliceImageViewer>::New();
+	resliceViewer = vtkSmartPointer<myResliceImageViewer>::New();
 	resliceViewer->SetThickMode(1);
 	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
 	vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
@@ -140,7 +140,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> img, int _id){
 
 }
 
-vtkSmartPointer<vtkResliceImageViewer> MPRView::GetVtkResliceImageViewer(){
+vtkSmartPointer<myResliceImageViewer> MPRView::GetmyResliceImageViewer(){
 	return this->resliceViewer;
 }
 
@@ -167,7 +167,7 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> img){
 	resliceCursorCallback = vtkSmartPointer<vtkResliceCursorCallback>::New();
 
 	for (std::shared_ptr<MPRView> m : mprs){
-		m->SetCallbacks(mprs[0]->GetVtkResliceImageViewer()->GetResliceCursor(),
+		m->SetCallbacks(mprs[0]->GetmyResliceImageViewer()->GetResliceCursor(),
 					    resliceCursorCallback);
 		resliceCursorCallback->AddMPR(m);
 
@@ -175,7 +175,7 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> img){
 }
 
 void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
-	AbortFlagOff();
+	AbortFlagOn();
 	cout << __FUNCTION__ << " - event = " << ev << endl;
 
 	vtkInteractorStyleImage *i = vtkInteractorStyleImage::SafeDownCast(caller);
@@ -189,8 +189,8 @@ void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, voi
 		wl = wl + dp[1];
 	}
 	for (shared_ptr<IMPRView> m : MPRs){
-		m->GetVtkResliceImageViewer()->SetColorWindow(ww);
-		m->GetVtkResliceImageViewer()->SetColorLevel(wl);
+		m->GetmyResliceImageViewer()->SetColorWindow(ww);
+		m->GetmyResliceImageViewer()->SetColorLevel(wl);
 		m->Atualizar();
 	}
 }
