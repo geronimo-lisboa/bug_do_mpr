@@ -40,6 +40,8 @@ public:
 class vtkResliceCursorCallback : public vtkCommand{
 private:
 	vector<shared_ptr<IMPRView>> MPRs;
+	double ww, wl;
+	vtkResliceCursorCallback();
 public:
 	static vtkResliceCursorCallback *New(){
 		return new vtkResliceCursorCallback();
@@ -137,6 +139,7 @@ void MPRView::SetCallbacks(vtkSmartPointer<vtkResliceCursor> _sharedCursor, vtkS
 	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResetCursorEvent, resliceCallback);
 	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::WindowLevelEvent, resliceCallback);
 	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceAxesChangedEvent, resliceCallback);
+	resliceViewer->GetInteractorStyle()->AddObserver(vtkCommand::WindowLevelEvent, resliceCallback);
 
 }
 
@@ -156,12 +159,28 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> img){
 }
 
 void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long event, void* calldata){
-	cout << __FUNCTION__ << endl;
+	AbortFlagOn();
+	vtkInteractorStyleImage *i = vtkInteractorStyleImage::SafeDownCast(caller);
+	if (i){
+		int *p1 = i->GetInteractor()->GetEventPosition();
+		int *p2 = i->GetInteractor()->GetLastEventPosition();
+		int dp[2];
+		dp[0] = p1[0] - p2[0];
+		dp[1] = p1[1] - p2[1];
+		ww = ww + dp[0];
+		wl = wl + dp[1];
+	}
 	for (shared_ptr<IMPRView> m : MPRs){
+		m->GetVtkResliceImageViewer()->SetColorWindow(ww);
+		m->GetVtkResliceImageViewer()->SetColorLevel(wl);
 		m->Atualizar();
 	}
+
 }
 
-
+vtkResliceCursorCallback::vtkResliceCursorCallback(){
+	ww = 500;
+	wl = 350;
+}
 
 
