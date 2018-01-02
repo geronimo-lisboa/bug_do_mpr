@@ -23,7 +23,10 @@
 #include <vector>
 #include <vtkCommand.h>
 #include <vtkInteractorStyleImage.h>
+#include <vtkImageSlabReslice.h>
+#include <boost/assert.hpp>
 using namespace std;
+
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
@@ -77,7 +80,13 @@ public:
 
 int main(int argc, char** argv){
 	//Carrega a imagem.
-	const std::vector<std::string> lst = GetList("C:\\meus dicoms\\mm.txt");//GetList("C:\\meus dicoms\\Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt"); //("C:\\meus dicoms\\mm.txt");//Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt");
+	if (argc == 1)
+	{
+		cout << "informe o path pro txt com a lista de fatias.";
+		return EXIT_FAILURE;
+	}
+	const string txtFile = argv[1];
+	const std::vector<std::string> lst = GetList(txtFile); //GetList("C:\\meus dicoms\\mm.txt");//GetList("C:\\meus dicoms\\Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt"); //("C:\\meus dicoms\\mm.txt");//Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt");
 	std::map<std::string, std::string> metadataDaImagem;
 	itk::Image<short, 3>::Pointer imagemItk = LoadVolume(metadataDaImagem, lst);
 	vtkSmartPointer<vtkImageImport> imagemVtk = CreateVTKImage(imagemItk);
@@ -99,6 +108,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> img, int _id){
 	id = _id;
 	imagem = img;
 	resliceViewer = vtkSmartPointer<vtkResliceImageViewer>::New();
+	resliceViewer->SetThickMode(1);
 	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
 	vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
 	renderWindow->AddRenderer(renderer);
@@ -110,9 +120,14 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> img, int _id){
 	resliceViewer->SetInputData(imagem);
 	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
 	vtkResliceCursorLineRepresentation *tl = vtkResliceCursorLineRepresentation::SafeDownCast(r);
-	vtkImageReslice *thickSlabReslice = vtkImageReslice::SafeDownCast(tl->GetReslice());
-	thickSlabReslice->SetSlabModeToMax();
-	thickSlabReslice->SetSlabNumberOfSlices(5);
+	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetReslice());
+	BOOST_ASSERT((thickSlabReslice != nullptr));//sanity check do cast
+	cout << thickSlabReslice->GetInterpolationModeAsString() << endl;
+	thickSlabReslice->SetInterpolationModeToCubic();
+	cout << thickSlabReslice->GetInterpolationModeAsString() << endl;
+	thickSlabReslice->SetSlabModeToMax();//Seta pra mip
+
+	thickSlabReslice->SetSlabNumberOfSlices(10);
 	vtkResliceCursorLineRepresentation *cursorRepresentation = vtkResliceCursorLineRepresentation::SafeDownCast(
 		resliceViewer->GetResliceCursorWidget()->GetRepresentation());
 	resliceViewer->GetResliceCursorWidget()->ManageWindowLevelOff();
@@ -121,6 +136,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> img, int _id){
 	string nomeDaTela = "mpr " + lexical_cast<string>(id);
 	renderWindow->SetWindowName(nomeDaTela.c_str());
 	renderWindow->Render();
+
 }
 
 vtkSmartPointer<vtkResliceImageViewer> MPRView::GetVtkResliceImageViewer(){
@@ -175,12 +191,11 @@ void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long event, 
 		m->GetVtkResliceImageViewer()->SetColorLevel(wl);
 		m->Atualizar();
 	}
-
 }
 
 vtkResliceCursorCallback::vtkResliceCursorCallback(){
-	ww = 500;
-	wl = 350;
+	ww = 1700;
+	wl = 1200;
 }
 
 
