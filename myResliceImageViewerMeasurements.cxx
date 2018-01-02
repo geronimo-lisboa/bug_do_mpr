@@ -18,7 +18,7 @@
 #include "vtkCommand.h"
 #include "vtkCallbackCommand.h"
 #include "vtkImageActor.h"
-#include "vtkResliceCursorWidget.h"
+#include "myResliceCursorWidget.h"
 #include "vtkResliceCursorLineRepresentation.h"
 #include "vtkDistanceRepresentation.h"
 #include "vtkDistanceWidget.h"
@@ -74,7 +74,7 @@ myResliceImageViewerMeasurements::~myResliceImageViewerMeasurements()
   if (this->ResliceImageViewer)
     {
     this->ResliceImageViewer->GetResliceCursor()->
-        RemoveObservers(vtkResliceCursorWidget::ResliceAxesChangedEvent,
+        RemoveObservers(myResliceCursorWidget::ResliceAxesChangedEvent,
                      this->EventCallbackCommand );
     }
 
@@ -93,10 +93,10 @@ void myResliceImageViewerMeasurements
     {
     // Add the observer
     i->GetResliceCursor()
-      ->AddObserver( vtkResliceCursorWidget::ResliceAxesChangedEvent,
+		->AddObserver(myResliceCursorWidget::ResliceAxesChangedEvent,
         this->EventCallbackCommand );
     i->GetResliceCursor()
-      ->AddObserver( vtkResliceCursorWidget::ResliceAxesChangedEvent,
+		->AddObserver(myResliceCursorWidget::ResliceAxesChangedEvent,
         this->EventCallbackCommand );
     }
 }

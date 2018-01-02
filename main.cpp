@@ -14,7 +14,7 @@
 #include <array>
 #include <vtkResliceCursor.h>
 #include <vtkWidgetRepresentation.h>
-#include <vtkResliceCursorWidget.h>
+#include "myResliceCursorWidget.h"
 #include <vtkResliceCursorLineRepresentation.h>
 #include <vtkImageReslice.h>
 #include <boost/lexical_cast.hpp>
@@ -152,10 +152,10 @@ void MPRView::SetCallbacks(vtkSmartPointer<vtkResliceCursor> _sharedCursor, vtkS
 	resliceCallback = rcbk;
 	sharedCursor = _sharedCursor;
 	resliceViewer->SetResliceCursor(sharedCursor);
-	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceThicknessChangedEvent, resliceCallback);
-	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResetCursorEvent, resliceCallback);
-	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::WindowLevelEvent, resliceCallback);
-	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceAxesChangedEvent, resliceCallback);
+	resliceViewer->GetResliceCursorWidget()->AddObserver(myResliceCursorWidget::ResliceThicknessChangedEvent, resliceCallback);
+	resliceViewer->GetResliceCursorWidget()->AddObserver(myResliceCursorWidget::ResetCursorEvent, resliceCallback);
+	resliceViewer->GetResliceCursorWidget()->AddObserver(myResliceCursorWidget::WindowLevelEvent, resliceCallback);
+	resliceViewer->GetResliceCursorWidget()->AddObserver(myResliceCursorWidget::ResliceAxesChangedEvent, resliceCallback);
 	resliceViewer->GetInteractorStyle()->AddObserver(vtkCommand::WindowLevelEvent, resliceCallback);
 }
 

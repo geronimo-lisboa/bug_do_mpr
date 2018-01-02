@@ -17,7 +17,7 @@
 #include "vtkCamera.h"
 #include "vtkCommand.h"
 #include "vtkImageActor.h"
-#include "vtkResliceCursorWidget.h"
+#include "myResliceCursorWidget.h"
 #include "vtkResliceCursorLineRepresentation.h"
 #include "vtkResliceCursorThickLineRepresentation.h"
 #include "vtkResliceCursorActor.h"
@@ -88,7 +88,7 @@ myResliceImageViewer::myResliceImageViewer()
 
   // Set up the reslice cursor widget, should it be used.
 
-  this->ResliceCursorWidget = vtkResliceCursorWidget::New();
+  this->ResliceCursorWidget = myResliceCursorWidget::New();
 
   vtkSmartPointer< vtkResliceCursor > resliceCursor =
     vtkSmartPointer< vtkResliceCursor >::New();

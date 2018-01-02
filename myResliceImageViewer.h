@@ -30,7 +30,7 @@
 #include "vtkInteractionImageModule.h" // For export macro
 #include "vtkImageViewer2.h"
 
-class vtkResliceCursorWidget;
+class myResliceCursorWidget;
 class vtkResliceCursor;
 class vtkScalarsToColors;
 class vtkBoundedPlanePointPlacer;
@@ -65,7 +65,7 @@ public:
   // Description:
   // Get the internal render window, renderer, image actor, and
   // image map instances.
-  vtkGetObjectMacro(ResliceCursorWidget,vtkResliceCursorWidget);
+  vtkGetObjectMacro(ResliceCursorWidget, myResliceCursorWidget);
 
   // Description:
   // Set/get the slice orientation
@@ -151,7 +151,7 @@ protected:
   vtkPlane * GetReslicePlane();
   double GetInterSliceSpacingInResliceMode();
 
-  vtkResliceCursorWidget            * ResliceCursorWidget;
+  myResliceCursorWidget            * ResliceCursorWidget;
   vtkBoundedPlanePointPlacer        * PointPlacer;
   int                                 ResliceMode;
   myResliceImageViewerMeasurements * Measurements;
