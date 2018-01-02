@@ -25,10 +25,13 @@
 #include <vtkInteractorStyleImage.h>
 #include <vtkImageSlabReslice.h>
 #include <boost/assert.hpp>
+#include <itkResampleImageFilter.h>
 using namespace std;
 
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
+
+itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator = 10.0f);
 
 class IMPRView{
 protected:
@@ -59,11 +62,11 @@ public:
 class MPRView : public IMPRView{
 private:
 	vtkSmartPointer<myResliceImageViewer> resliceViewer;
-	vtkSmartPointer<vtkImageData> imagem;
+	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
 	vtkSmartPointer<vtkResliceCursor> sharedCursor;
 	vtkResliceCursorCallback *resliceCallback;
 public:
-	MPRView(vtkSmartPointer<vtkImageData> img, int _id);
+	MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id);
 	vtkSmartPointer<myResliceImageViewer> GetmyResliceImageViewer();
 	void Atualizar();
 	~MPRView(){};
@@ -74,9 +77,9 @@ class Sistema{
 private:
 	vtkSmartPointer<vtkResliceCursorCallback> resliceCursorCallback;
 	array<shared_ptr<MPRView>, 3> mprs;
-	vtkSmartPointer<vtkImageData> imagem;
+	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
 public:
-	Sistema(vtkSmartPointer<vtkImageData> img);
+	Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes);
 };
 
 int main(int argc, char** argv){
@@ -89,10 +92,15 @@ int main(int argc, char** argv){
 	const string txtFile = argv[1];
 	const std::vector<std::string> lst = GetList(txtFile); //GetList("C:\\meus dicoms\\mm.txt");//GetList("C:\\meus dicoms\\Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt"); //("C:\\meus dicoms\\mm.txt");//Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt");
 	std::map<std::string, std::string> metadataDaImagem;
-	itk::Image<short, 3>::Pointer imagemItk = LoadVolume(metadataDaImagem, lst);
-	vtkSmartPointer<vtkImageImport> imagemVtk = CreateVTKImage(imagemItk);
+	itk::Image<short, 3>::Pointer versaoHiRes = LoadVolume(metadataDaImagem, lst);
+	//diminuir o tamanho da imagem aqui...
+	itk::Image<short, 3>::Pointer versaoLowRes = CreateLowRes(versaoHiRes);
+
+
+	vtkSmartPointer<vtkImageImport> imagemVtkHiRes = CreateVTKImage(versaoHiRes);
+	vtkSmartPointer<vtkImageImport> imagemVtkLowRes = CreateVTKImage(versaoLowRes);
 	//Cria o sistema
-	unique_ptr<Sistema> sistema = make_unique<Sistema>(imagemVtk->GetOutput());
+	unique_ptr<Sistema> sistema = make_unique<Sistema>(imagemVtkHiRes->GetOutput(), imagemVtkLowRes->GetOutput());
 	//A tela dummy
 	vtkSmartPointer<vtkRenderer> rendererDummy = vtkSmartPointer<vtkRenderer>::New();
 	vtkSmartPointer<vtkRenderWindow> renderWindowDummy = vtkSmartPointer<vtkRenderWindow>::New();
@@ -105,9 +113,10 @@ int main(int argc, char** argv){
 	return EXIT_SUCCESS;
 }
 
-MPRView::MPRView(vtkSmartPointer<vtkImageData> img, int _id){
+MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id){
 	id = _id;
-	imagem = img;
+	imagemHiRes = imgHiRes;
+	imagemLowRes = imgLowRes;
 	resliceViewer = vtkSmartPointer<myResliceImageViewer>::New();
 	resliceViewer->SetThickMode(1);
 	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
@@ -118,7 +127,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> img, int _id){
 	resliceViewer->SetRenderWindow(renderWindow);
 	resliceViewer->SetupInteractor(interactor);
 	resliceViewer->SetResliceModeToOblique();
-	resliceViewer->SetInputData(imagem);
+	resliceViewer->SetInputData(imagemHiRes, imagemLowRes);
 	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
 	vtkResliceCursorLineRepresentation *tl = vtkResliceCursorLineRepresentation::SafeDownCast(r);
 	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetReslice());
@@ -159,11 +168,12 @@ void MPRView::SetCallbacks(vtkSmartPointer<vtkResliceCursor> _sharedCursor, vtkS
 	resliceViewer->GetInteractorStyle()->AddObserver(vtkCommand::WindowLevelEvent, resliceCallback);
 }
 
-Sistema::Sistema(vtkSmartPointer<vtkImageData> img){
-	imagem = img;
-	mprs[0] = make_shared<MPRView>(imagem, 0);
-	mprs[1] = make_shared<MPRView>(imagem, 1);
-	mprs[2] = make_shared<MPRView>(imagem, 2);
+Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes){
+	imagemHiRes = imgHiRes;
+	imagemLowRes = imgHiRes;
+	mprs[0] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 0);
+	mprs[1] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 1);
+	mprs[2] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 2);
 	resliceCursorCallback = vtkSmartPointer<vtkResliceCursorCallback>::New();
 
 	for (std::shared_ptr<MPRView> m : mprs){
@@ -201,4 +211,26 @@ vtkResliceCursorCallback::vtkResliceCursorCallback()
 	wl = 150;
 }
 
-
+itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator )
+{
+	itk::Image<short, 3>::SizeType inputSize = imagem->GetLargestPossibleRegion().GetSize();
+	itk::Image<short, 3>::SizeType outputSize;
+	outputSize[0] = inputSize[0] / fator;
+	outputSize[1] = inputSize[1] / fator;
+	outputSize[2] = inputSize[2] / fator;
+	itk::Image<short, 3>::SpacingType outputSpacing;
+	outputSpacing[0] = imagem->GetSpacing()[0] * fator;
+	outputSpacing[1] = imagem->GetSpacing()[1] * fator;
+	outputSpacing[2] = imagem->GetSpacing()[2] * fator;
+	typedef itk::IdentityTransform<double, 3> TransformType;
+	typedef itk::ResampleImageFilter<itk::Image<short, 3>, itk::Image<short, 3>> ResampleImageFilterType;
+	ResampleImageFilterType::Pointer resample = ResampleImageFilterType::New();
+	resample->SetOutputParametersFromImage(imagem);
+	resample->SetInput(imagem);
+	resample->SetSize(outputSize);
+	resample->SetOutputSpacing(outputSpacing);
+	resample->SetTransform(TransformType::New());
+	resample->UpdateLargestPossibleRegion();
+	itk::Image<short, 3>::Pointer output = resample->GetOutput();
+	return output;
+}

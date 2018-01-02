@@ -434,8 +434,9 @@ vtkResliceCursor * myResliceImageViewer::GetResliceCursor()
 }
 
 //----------------------------------------------------------------------------
-void myResliceImageViewer::SetInputData(vtkImageData *in)
+void myResliceImageViewer::SetInputData(vtkImageData *imgHiRes, vtkImageData *imgLowRes)
 {
+	vtkImageData *in = imgHiRes;
   if(!in)
     {
     return;

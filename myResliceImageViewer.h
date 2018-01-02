@@ -54,7 +54,7 @@ public:
 
   // Description:
   // Set/Get the input image to the viewer.
-  virtual void SetInputData(vtkImageData *in);
+  virtual void SetInputData(vtkImageData *imgHiRes, vtkImageData *imgLowRes);
   virtual void SetInputConnection(vtkAlgorithmOutput* input);
 
   // Description:
