@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkResliceCursorRepresentation.cxx
+  Module:    myResliceCursorRepresentation.cxx
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,10 +12,10 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkResliceCursorRepresentation.h"
+#include "myResliceCursorRepresentation.h"
 
-#include "vtkResliceCursor.h"
-#include "vtkResliceCursorPolyDataAlgorithm.h"
+#include "myResliceCursor.h"
+#include "myResliceCursorPolyDataAlgorithm.h"
 #include "vtkHandleRepresentation.h"
 #include "vtkCoordinate.h"
 #include "vtkRenderer.h"
@@ -49,10 +49,10 @@
 
 #include <sstream>
 
-vtkCxxSetObjectMacro(vtkResliceCursorRepresentation, ColorMap, vtkImageMapToColors);
+vtkCxxSetObjectMacro(myResliceCursorRepresentation, ColorMap, vtkImageMapToColors);
 
 //----------------------------------------------------------------------
-vtkResliceCursorRepresentation::vtkResliceCursorRepresentation()
+myResliceCursorRepresentation::myResliceCursorRepresentation()
 {
   this->ManipulationMode = None;
   this->Modifier = 0;
@@ -130,7 +130,7 @@ vtkResliceCursorRepresentation::vtkResliceCursorRepresentation()
 }
 
 //----------------------------------------------------------------------
-vtkResliceCursorRepresentation::~vtkResliceCursorRepresentation()
+myResliceCursorRepresentation::~myResliceCursorRepresentation()
 {
   this->ThicknessTextProperty->Delete();
   this->ThicknessTextMapper->Delete();
@@ -155,7 +155,7 @@ vtkResliceCursorRepresentation::~vtkResliceCursorRepresentation()
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorRepresentation::SetLookupTable(vtkScalarsToColors *l)
+void myResliceCursorRepresentation::SetLookupTable(vtkScalarsToColors *l)
 {
   vtkSetObjectBodyMacro(LookupTable, vtkScalarsToColors, l);
   this->LookupTable = l;
@@ -166,25 +166,25 @@ void vtkResliceCursorRepresentation::SetLookupTable(vtkScalarsToColors *l)
 }
 
 //----------------------------------------------------------------------
-char* vtkResliceCursorRepresentation::GetThicknessLabelText()
+char* myResliceCursorRepresentation::GetThicknessLabelText()
 {
   return this->ThicknessTextMapper->GetInput();
 }
 
 //----------------------------------------------------------------------
-double* vtkResliceCursorRepresentation::GetThicknessLabelPosition()
+double* myResliceCursorRepresentation::GetThicknessLabelPosition()
 {
   return this->ThicknessTextActor->GetPosition();
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorRepresentation::GetThicknessLabelPosition(double pos[3])
+void myResliceCursorRepresentation::GetThicknessLabelPosition(double pos[3])
 {
   this->ThicknessTextActor->GetPositionCoordinate()->GetValue(pos);
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorRepresentation::GetWorldThicknessLabelPosition(double pos[3])
+void myResliceCursorRepresentation::GetWorldThicknessLabelPosition(double pos[3])
 {
   double viewportPos[3], worldPos[4];
   pos[0] = pos[1] = pos[2] = 0.0;
@@ -214,13 +214,13 @@ void vtkResliceCursorRepresentation::GetWorldThicknessLabelPosition(double pos[3
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorRepresentation::SetManipulationMode( int m )
+void myResliceCursorRepresentation::SetManipulationMode( int m )
 {
   this->ManipulationMode = m;
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorRepresentation::BuildRepresentation()
+void myResliceCursorRepresentation::BuildRepresentation()
 {
   this->Reslice->SetInputData(this->GetResliceCursor()->GetImage());
 
@@ -244,7 +244,7 @@ void vtkResliceCursorRepresentation::BuildRepresentation()
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::InitializeReslicePlane()
+void myResliceCursorRepresentation::InitializeReslicePlane()
 {
   if ( !this->GetResliceCursor()->GetImage())
     {
@@ -264,7 +264,7 @@ void vtkResliceCursorRepresentation::InitializeReslicePlane()
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::ResetCamera()
+void myResliceCursorRepresentation::ResetCamera()
 {
 
   // Reset the camera back to the default and the focal point to where
@@ -290,7 +290,7 @@ void vtkResliceCursorRepresentation::ResetCamera()
 //----------------------------------------------------------------------------
 // This is the first axis of the reslice on the currently resliced plane
 //
-void vtkResliceCursorRepresentation::GetVector1(double v1[3])
+void myResliceCursorRepresentation::GetVector1(double v1[3])
 {
   // From the initial view up vector, compute its cross product with the
   // current plane normal. This is Vector1. Then Vector2 is the cross product
@@ -321,7 +321,7 @@ void vtkResliceCursorRepresentation::GetVector1(double v1[3])
 // other. The goal of vector1 and vector2 is to compute the X and Y axes of
 // the resliced plane.
 //
-void vtkResliceCursorRepresentation::GetVector2(double v2[3])
+void myResliceCursorRepresentation::GetVector2(double v2[3])
 {
   const int planeOrientation =
     this->GetCursorAlgorithm()->GetReslicePlaneNormal();
@@ -339,7 +339,7 @@ void vtkResliceCursorRepresentation::GetVector2(double v2[3])
 //----------------------------------------------------------------------
 // Compute the origin of the reslice plane prior to transformations.
 //
-void vtkResliceCursorRepresentation::ComputeReslicePlaneOrigin()
+void myResliceCursorRepresentation::ComputeReslicePlaneOrigin()
 {
   double bounds[6];
   this->GetResliceCursor()->GetImage()->GetBounds(bounds);
@@ -387,7 +387,7 @@ void vtkResliceCursorRepresentation::ComputeReslicePlaneOrigin()
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorRepresentation::UpdateReslicePlane()
+void myResliceCursorRepresentation::UpdateReslicePlane()
 {
   if ( !this->GetResliceCursor()->GetImage() ||
        !this->TexturePlaneActor->GetVisibility() )
@@ -560,7 +560,7 @@ void vtkResliceCursorRepresentation::UpdateReslicePlane()
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::ComputeOrigin(vtkMatrix4x4 *m)
+void myResliceCursorRepresentation::ComputeOrigin(vtkMatrix4x4 *m)
 {
   double center[4] = {0,0,0,1};
   double centerTransformed[4];
@@ -576,7 +576,7 @@ void vtkResliceCursorRepresentation::ComputeOrigin(vtkMatrix4x4 *m)
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation
+void myResliceCursorRepresentation
 ::SetResliceParameters( double outputSpacingX, double outputSpacingY,
     int extentX, int extentY )
 {
@@ -601,7 +601,7 @@ void vtkResliceCursorRepresentation
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation
+void myResliceCursorRepresentation
 ::SetWindowLevel(double window, double level, int copy)
 {
   if ( copy )
@@ -634,14 +634,14 @@ void vtkResliceCursorRepresentation
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::GetWindowLevel(double wl[2])
+void myResliceCursorRepresentation::GetWindowLevel(double wl[2])
 {
   wl[0] = this->CurrentWindow;
   wl[1] = this->CurrentLevel;
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::WindowLevel(double X, double Y)
+void myResliceCursorRepresentation::WindowLevel(double X, double Y)
 {
   if ( !this->Renderer )
     {
@@ -720,7 +720,7 @@ void vtkResliceCursorRepresentation::WindowLevel(double X, double Y)
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::InvertTable()
+void myResliceCursorRepresentation::InvertTable()
 {
   vtkLookupTable *lut = vtkLookupTable::SafeDownCast(this->LookupTable);
 
@@ -746,7 +746,7 @@ void vtkResliceCursorRepresentation::InvertTable()
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::CreateDefaultResliceAlgorithm()
+void myResliceCursorRepresentation::CreateDefaultResliceAlgorithm()
 {
   // Allows users to optionally use their own reslice filters or other
   // algorithms here.
@@ -757,7 +757,7 @@ void vtkResliceCursorRepresentation::CreateDefaultResliceAlgorithm()
 }
 
 //----------------------------------------------------------------------------
-vtkScalarsToColors* vtkResliceCursorRepresentation::CreateDefaultLookupTable()
+vtkScalarsToColors* myResliceCursorRepresentation::CreateDefaultLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->Register(this);
@@ -772,14 +772,14 @@ vtkScalarsToColors* vtkResliceCursorRepresentation::CreateDefaultLookupTable()
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::ActivateText(int i)
+void myResliceCursorRepresentation::ActivateText(int i)
 {
   this->TextActor->SetVisibility(this->Renderer &&
         this->GetVisibility() && i && this->DisplayText );
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::ManageTextDisplay()
+void myResliceCursorRepresentation::ManageTextDisplay()
 {
   if ( !this->DisplayText )
     {
@@ -787,13 +787,13 @@ void vtkResliceCursorRepresentation::ManageTextDisplay()
     }
 
   if ( this->ManipulationMode ==
-       vtkResliceCursorRepresentation::WindowLevelling )
+       myResliceCursorRepresentation::WindowLevelling )
     {
     sprintf(this->TextBuff,"Window, Level: ( %g, %g )",
             this->CurrentWindow, this->CurrentLevel );
     }
   else if (this->ManipulationMode ==
-      vtkResliceCursorRepresentation::ResizeThickness )
+      myResliceCursorRepresentation::ResizeThickness )
     {
     // For now all the thickness' are the same anyway.
     sprintf(this->TextBuff,"Reslice Thickness: %g mm",
@@ -805,19 +805,19 @@ void vtkResliceCursorRepresentation::ManageTextDisplay()
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::SetTextProperty(vtkTextProperty* tprop)
+void myResliceCursorRepresentation::SetTextProperty(vtkTextProperty* tprop)
 {
   this->TextActor->SetTextProperty(tprop);
 }
 
 //----------------------------------------------------------------------------
-vtkTextProperty* vtkResliceCursorRepresentation::GetTextProperty()
+vtkTextProperty* myResliceCursorRepresentation::GetTextProperty()
 {
   return this->TextActor->GetTextProperty();
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorRepresentation::GenerateText()
+void myResliceCursorRepresentation::GenerateText()
 {
   sprintf(this->TextBuff,"NA");
   this->TextActor->SetInput(this->TextBuff);
@@ -854,7 +854,7 @@ void vtkResliceCursorRepresentation::GenerateText()
     }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void myResliceCursorRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   //Superclass typedef defined in vtkTypeMacro() found in vtkSetGet.h
   this->Superclass::PrintSelf(os,indent);

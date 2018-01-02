@@ -1,25 +1,4 @@
-/*=========================================================================
 
-  Program:   Visualization Toolkit
-  Module:    vtkResliceCursorRepresentation.h
-
-  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
-  All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-// .NAME vtkResliceCursorRepresentation - represent the vtkResliceCursorWidget
-// .SECTION Description
-// This class is the base class for the reslice cursor representation
-// subclasses. It represents a cursor that may be interactively translated,
-// rotated through an image and perform thick / thick reformats.
-// .SECTION See Also
-// vtkResliceCursorLineRepresentation vtkResliceCursorThickLineRepresentation
-// vtkResliceCursorWidget vtkResliceCursor
 
 #ifndef myResliceCursorRepresentation_h
 #define myResliceCursorRepresentation_h
@@ -34,8 +13,8 @@ class vtkImageData;
 class vtkImageReslice;
 class vtkPlane;
 class vtkPlaneSource;
-class vtkResliceCursorPolyDataAlgorithm;
-class vtkResliceCursor;
+class myResliceCursorPolyDataAlgorithm;
+class myResliceCursor;
 class vtkMatrix4x4;
 class vtkScalarsToColors;
 class vtkImageMapToColors;
@@ -136,7 +115,7 @@ public:
   double GetWindow(){return this->CurrentWindow;}
   double GetLevel(){return this->CurrentLevel;}
 
-  virtual vtkResliceCursor * GetResliceCursor() = 0;
+  virtual myResliceCursor * GetResliceCursor() = 0;
 
   // Description:
   // Enable/disable text display of window-level, image coordinates and
@@ -178,7 +157,7 @@ public:
 
   // Description:
   // Get the underlying cursor source.
-  virtual vtkResliceCursorPolyDataAlgorithm * GetCursorAlgorithm() = 0;
+  virtual myResliceCursorPolyDataAlgorithm * GetCursorAlgorithm() = 0;
 
   // Description:
   // Get the plane source on which the texture (the thin/thick resliced

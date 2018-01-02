@@ -1,27 +1,4 @@
-/*=========================================================================
 
-  Program:   Visualization Toolkit
-  Module:    vtkResliceImageViewer.h
-
-  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
-  All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-// .NAME vtkResliceImageViewer - Display an image along with a reslice cursor
-// .SECTION Description
-// This class is similar to vtkImageViewer2. It displays the image along with
-// a two cross hairs for reslicing. The cross hairs may be interactively
-// manipulated and are typically used to reslice two other views of
-// vtkResliceImageViewer. See QtVTKRenderWindows for an example. The reslice
-// cursor is used to perform thin or thick MPR through data. The class can
-// also default to the behaviour of vtkImageViewer2 if the Reslice mode is
-// set to RESLICE_AXIS_ALIGNED.
-// .SECTION see also
 
 
 #ifndef myResliceImageViewer_h
@@ -35,7 +12,7 @@ class myResliceCursor;
 class vtkScalarsToColors;
 class vtkBoundedPlanePointPlacer;
 class myResliceImageViewerMeasurements;
-class vtkResliceImageViewerScrollCallback;
+class myResliceImageViewerScrollCallback;
 class vtkPlane;
 
 class VTKINTERACTIONIMAGE_EXPORT myResliceImageViewer : public vtkImageViewer2
@@ -156,7 +133,7 @@ protected:
   int                                 ResliceMode;
   myResliceImageViewerMeasurements * Measurements;
   int                                 SliceScrollOnMouseWheel;
-  vtkResliceImageViewerScrollCallback * ScrollCallback;
+  myResliceImageViewerScrollCallback * ScrollCallback;
 
 private:
 	myResliceImageViewer(const myResliceImageViewer&);  // Not implemented.

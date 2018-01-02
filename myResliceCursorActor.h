@@ -1,53 +1,32 @@
-/*=========================================================================
 
-  Program:   Visualization Toolkit
-  Module:    vtkResliceCursorActor.h
 
-  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
-  All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-// .NAME vtkResliceCursorActor - Represent a reslice cursor
-// .SECTION Description
-// A reslice cursor consists of a pair of lines (cross hairs), thin or thick,
-// that may be interactively manipulated for thin/thick reformats through the
-// data.
-// .SECTION See Also
-// vtkResliceCursor vtkResliceCursorPolyDataAlgorithm vtkResliceCursorWidget
-// vtkResliceCursorRepresentation vtkResliceCursorLineRepresentation
-
-#ifndef vtkResliceCursorActor_h
-#define vtkResliceCursorActor_h
+#ifndef myResliceCursorActor_h
+#define myResliceCursorActor_h
 
 #include "vtkInteractionWidgetsModule.h" // For export macro
 #include "vtkProp3D.h"
 
-class vtkResliceCursor;
-class vtkResliceCursorPolyDataAlgorithm;
+class myResliceCursor;
+class myResliceCursorPolyDataAlgorithm;
 class vtkPolyDataMapper;
 class vtkActor;
 class vtkProperty;
 class vtkBoundingBox;
 
-class VTKINTERACTIONWIDGETS_EXPORT vtkResliceCursorActor : public vtkProp3D
+class VTKINTERACTIONWIDGETS_EXPORT myResliceCursorActor : public vtkProp3D
 {
 
 public:
 
   // Description:
   // Standard VTK methods
-  static vtkResliceCursorActor *New();
-  vtkTypeMacro(vtkResliceCursorActor,vtkProp3D);
+  static myResliceCursorActor *New();
+  vtkTypeMacro(myResliceCursorActor,vtkProp3D);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Get the cursor algorithm. The cursor must be set on the algorithm
-  vtkGetObjectMacro( CursorAlgorithm, vtkResliceCursorPolyDataAlgorithm );
+  vtkGetObjectMacro( CursorAlgorithm, myResliceCursorPolyDataAlgorithm );
 
   // Description:
   // Support the standard render methods.
@@ -85,13 +64,13 @@ public:
   virtual void SetUserMatrix( vtkMatrix4x4 *matrix);
 
 protected:
-  vtkResliceCursorActor();
-  ~vtkResliceCursorActor();
+  myResliceCursorActor();
+  ~myResliceCursorActor();
 
   void UpdateViewProps( vtkViewport * v = NULL );
   void UpdateHoleSize( vtkViewport * v );
 
-  vtkResliceCursorPolyDataAlgorithm * CursorAlgorithm;
+  myResliceCursorPolyDataAlgorithm * CursorAlgorithm;
   vtkPolyDataMapper                 * CursorCenterlineMapper[3];
   vtkActor                          * CursorCenterlineActor[3];
   vtkPolyDataMapper                 * CursorThickSlabMapper[3];
@@ -100,8 +79,8 @@ protected:
   vtkProperty                       * ThickSlabProperty[3];
 
 private:
-  vtkResliceCursorActor(const vtkResliceCursorActor&);  // Not implemented.
-  void operator=(const vtkResliceCursorActor&);  // Not implemented.
+  myResliceCursorActor(const myResliceCursorActor&);  // Not implemented.
+  void operator=(const myResliceCursorActor&);  // Not implemented.
 };
 
 #endif

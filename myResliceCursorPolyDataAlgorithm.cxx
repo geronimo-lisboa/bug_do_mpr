@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkResliceCursorPolyDataAlgorithm.cxx
+  Module:    myResliceCursorPolyDataAlgorithm.cxx
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,9 +12,9 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkResliceCursorPolyDataAlgorithm.h"
+#include "myResliceCursorPolyDataAlgorithm.h"
 
-#include "vtkResliceCursor.h"
+#include "myResliceCursor.h"
 #include "vtkCutter.h"
 #include "vtkBox.h"
 #include "vtkImageData.h"
@@ -33,15 +33,15 @@
 #include <math.h>
 #include <algorithm>
 
-vtkStandardNewMacro(vtkResliceCursorPolyDataAlgorithm);
-vtkCxxSetObjectMacro(vtkResliceCursorPolyDataAlgorithm, ResliceCursor,
-                     vtkResliceCursor )
+vtkStandardNewMacro(myResliceCursorPolyDataAlgorithm);
+vtkCxxSetObjectMacro(myResliceCursorPolyDataAlgorithm, ResliceCursor,
+                     myResliceCursor )
 
 //---------------------------------------------------------------------------
-vtkResliceCursorPolyDataAlgorithm::vtkResliceCursorPolyDataAlgorithm()
+myResliceCursorPolyDataAlgorithm::myResliceCursorPolyDataAlgorithm()
 {
   this->ResliceCursor = NULL;
-  this->ReslicePlaneNormal = vtkResliceCursorPolyDataAlgorithm::XAxis;
+  this->ReslicePlaneNormal = myResliceCursorPolyDataAlgorithm::XAxis;
   this->Cutter        = vtkCutter::New();
   this->Box           = vtkBox::New();
   this->ClipWithBox   = vtkClipPolyData::New();
@@ -73,7 +73,7 @@ vtkResliceCursorPolyDataAlgorithm::vtkResliceCursorPolyDataAlgorithm()
 }
 
 //---------------------------------------------------------------------------
-vtkResliceCursorPolyDataAlgorithm::~vtkResliceCursorPolyDataAlgorithm()
+myResliceCursorPolyDataAlgorithm::~myResliceCursorPolyDataAlgorithm()
 {
   this->SetResliceCursor(NULL);
   this->Cutter->Delete();
@@ -89,7 +89,7 @@ vtkResliceCursorPolyDataAlgorithm::~vtkResliceCursorPolyDataAlgorithm()
 }
 
 //---------------------------------------------------------------------------
-void vtkResliceCursorPolyDataAlgorithm::BuildResliceSlabAxisTopology()
+void myResliceCursorPolyDataAlgorithm::BuildResliceSlabAxisTopology()
 {
   for (int i = 0; i < 2; i++)
     {
@@ -110,7 +110,7 @@ void vtkResliceCursorPolyDataAlgorithm::BuildResliceSlabAxisTopology()
 }
 
 //---------------------------------------------------------------------------
-vtkPolyData *vtkResliceCursorPolyDataAlgorithm::GetCenterlineAxis1()
+vtkPolyData *myResliceCursorPolyDataAlgorithm::GetCenterlineAxis1()
 {
   return vtkPolyData::SafeDownCast(
     this->GetExecutive()->GetOutputData(0));
@@ -118,7 +118,7 @@ vtkPolyData *vtkResliceCursorPolyDataAlgorithm::GetCenterlineAxis1()
 
 
 //---------------------------------------------------------------------------
-vtkPolyData *vtkResliceCursorPolyDataAlgorithm::GetCenterlineAxis2()
+vtkPolyData *myResliceCursorPolyDataAlgorithm::GetCenterlineAxis2()
 {
   return vtkPolyData::SafeDownCast(
     this->GetExecutive()->GetOutputData(1));
@@ -126,7 +126,7 @@ vtkPolyData *vtkResliceCursorPolyDataAlgorithm::GetCenterlineAxis2()
 
 
 //---------------------------------------------------------------------------
-vtkPolyData *vtkResliceCursorPolyDataAlgorithm::GetThickSlabAxis1()
+vtkPolyData *myResliceCursorPolyDataAlgorithm::GetThickSlabAxis1()
 {
   return vtkPolyData::SafeDownCast(
     this->GetExecutive()->GetOutputData(2));
@@ -134,14 +134,14 @@ vtkPolyData *vtkResliceCursorPolyDataAlgorithm::GetThickSlabAxis1()
 
 
 //---------------------------------------------------------------------------
-vtkPolyData *vtkResliceCursorPolyDataAlgorithm::GetThickSlabAxis2()
+vtkPolyData *myResliceCursorPolyDataAlgorithm::GetThickSlabAxis2()
 {
   return vtkPolyData::SafeDownCast(
     this->GetExecutive()->GetOutputData(3));
 }
 
 //---------------------------------------------------------------------------
-int vtkResliceCursorPolyDataAlgorithm::RequestData(
+int myResliceCursorPolyDataAlgorithm::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
   vtkInformationVector *vtkNotUsed(outputVector))
@@ -177,7 +177,7 @@ int vtkResliceCursorPolyDataAlgorithm::RequestData(
 }
 
 //---------------------------------------------------------------------------
-void vtkResliceCursorPolyDataAlgorithm
+void myResliceCursorPolyDataAlgorithm
 ::GetSlabPolyData( int axis, int planeAxis, vtkPolyData *pd )
 {
   double normal[3], thicknessDirection[3];
@@ -214,7 +214,7 @@ void vtkResliceCursorPolyDataAlgorithm
 }
 
 //---------------------------------------------------------------------------
-int vtkResliceCursorPolyDataAlgorithm::GetAxis1()
+int myResliceCursorPolyDataAlgorithm::GetAxis1()
 {
   if (this->ReslicePlaneNormal == 2)
     {
@@ -228,7 +228,7 @@ int vtkResliceCursorPolyDataAlgorithm::GetAxis1()
 }
 
 //---------------------------------------------------------------------------
-int vtkResliceCursorPolyDataAlgorithm::GetAxis2()
+int myResliceCursorPolyDataAlgorithm::GetAxis2()
 {
   if (this->ReslicePlaneNormal == 2)
     {
@@ -242,7 +242,7 @@ int vtkResliceCursorPolyDataAlgorithm::GetAxis2()
 }
 
 //---------------------------------------------------------------------------
-int vtkResliceCursorPolyDataAlgorithm::GetPlaneAxis1()
+int myResliceCursorPolyDataAlgorithm::GetPlaneAxis1()
 {
   if (this->ReslicePlaneNormal == 2)
     {
@@ -256,7 +256,7 @@ int vtkResliceCursorPolyDataAlgorithm::GetPlaneAxis1()
 }
 
 //---------------------------------------------------------------------------
-int vtkResliceCursorPolyDataAlgorithm::GetPlaneAxis2()
+int myResliceCursorPolyDataAlgorithm::GetPlaneAxis2()
 {
   if (this->ReslicePlaneNormal == 2)
     {
@@ -270,7 +270,7 @@ int vtkResliceCursorPolyDataAlgorithm::GetPlaneAxis2()
 }
 
 //---------------------------------------------------------------------------
-int vtkResliceCursorPolyDataAlgorithm::GetOtherPlaneForAxis( int p )
+int myResliceCursorPolyDataAlgorithm::GetOtherPlaneForAxis( int p )
 {
   for (int i = 0; i < 3; i++)
     {
@@ -284,7 +284,7 @@ int vtkResliceCursorPolyDataAlgorithm::GetOtherPlaneForAxis( int p )
 }
 
 //---------------------------------------------------------------------------
-void vtkResliceCursorPolyDataAlgorithm
+void myResliceCursorPolyDataAlgorithm
 ::CutAndClip( vtkPolyData * input, vtkPolyData * output )
 {
   this->ClipWithBox->SetClipFunction(this->Box);
@@ -314,7 +314,7 @@ void vtkResliceCursorPolyDataAlgorithm
 }
 
 //-------------------------------------------------------------------------
-unsigned long int vtkResliceCursorPolyDataAlgorithm::GetMTime()
+unsigned long int myResliceCursorPolyDataAlgorithm::GetMTime()
 {
   unsigned long mTime=this->Superclass::GetMTime();
   if (this->ResliceCursor)
@@ -330,7 +330,7 @@ unsigned long int vtkResliceCursorPolyDataAlgorithm::GetMTime()
 }
 
 //---------------------------------------------------------------------------
-void vtkResliceCursorPolyDataAlgorithm::PrintSelf(
+void myResliceCursorPolyDataAlgorithm::PrintSelf(
                     ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

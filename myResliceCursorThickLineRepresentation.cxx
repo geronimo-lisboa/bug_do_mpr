@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkResliceCursorThickLineRepresentation.cxx
+  Module:    myResliceCursorThickLineRepresentation.cxx
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,10 +12,10 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkResliceCursorThickLineRepresentation.h"
+#include "myResliceCursorThickLineRepresentation.h"
 #include "vtkImageSlabReslice.h"
 #include "vtkImageReslice.h"
-#include "vtkResliceCursor.h"
+#include "myResliceCursor.h"
 #include "vtkImageData.h"
 #include "vtkObjectFactory.h"
 #include "vtkImageMapToColors.h"
@@ -24,22 +24,22 @@
 
 #include <sstream>
 
-vtkStandardNewMacro(vtkResliceCursorThickLineRepresentation);
+vtkStandardNewMacro(myResliceCursorThickLineRepresentation);
 
 
 //----------------------------------------------------------------------
-vtkResliceCursorThickLineRepresentation::vtkResliceCursorThickLineRepresentation()
+myResliceCursorThickLineRepresentation::myResliceCursorThickLineRepresentation()
 {
   this->CreateDefaultResliceAlgorithm();
 }
 
 //----------------------------------------------------------------------
-vtkResliceCursorThickLineRepresentation::~vtkResliceCursorThickLineRepresentation()
+myResliceCursorThickLineRepresentation::~myResliceCursorThickLineRepresentation()
 {
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorThickLineRepresentation::CreateDefaultResliceAlgorithm()
+void myResliceCursorThickLineRepresentation::CreateDefaultResliceAlgorithm()
 {
   if (this->Reslice)
     {
@@ -51,7 +51,7 @@ void vtkResliceCursorThickLineRepresentation::CreateDefaultResliceAlgorithm()
 }
 
 //----------------------------------------------------------------------------
-void vtkResliceCursorThickLineRepresentation
+void myResliceCursorThickLineRepresentation
 ::SetResliceParameters( double outputSpacingX, double outputSpacingY,
     int extentX, int extentY )
 {
@@ -76,7 +76,7 @@ void vtkResliceCursorThickLineRepresentation
     thickReslice->SetOutputOrigin(0.5*outputSpacingX, 0.5*outputSpacingY, 0);
     thickReslice->SetOutputExtent(0, extentX-1, 0, extentY-1, 0, 0);
 
-    vtkResliceCursor *rc = this->GetResliceCursor();
+    myResliceCursor *rc = this->GetResliceCursor();
     thickReslice->SetSlabThickness(rc->GetThickness()[0]);
     double spacing[3];
     rc->GetImage()->GetSpacing(spacing);
@@ -92,7 +92,7 @@ void vtkResliceCursorThickLineRepresentation
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorThickLineRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void myResliceCursorThickLineRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   //Superclass typedef defined in vtkTypeMacro() found in vtkSetGet.h
   this->Superclass::PrintSelf(os,indent);

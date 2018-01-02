@@ -1,47 +1,23 @@
-/*=========================================================================
 
-  Program:   Visualization Toolkit
-  Module:    vtkPicker.h
 
-  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
-  All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-// .NAME vtkResliceCursorPicker - ray-cast cell picker for the reslice cursor
-// .SECTION Description
-// This class is is used by the vtkResliceCursorWidget to pick reslice axes
-// drawn by a vtkResliceCursorActor. The class returns the axes picked if
-// any, whether one has picked the center. It takes as input an instance
-// of vtkResliceCursorPolyDataAlgorithm. This is all done internally by
-// vtkResliceCursorWidget and as such users are not expected to use this
-// class directly, unless they are overriding the behaviour of
-// vtkResliceCursorWidget.
-// .SECTION see also
-// vtkResliceCursor vtkResliceCursorWidget
-
-#ifndef vtkResliceCursorPicker_h
-#define vtkResliceCursorPicker_h
+#ifndef myResliceCursorPicker_h
+#define myResliceCursorPicker_h
 
 #include "vtkInteractionWidgetsModule.h" // For export macro
 #include "vtkPicker.h"
 
 class vtkPolyData;
 class vtkGenericCell;
-class vtkResliceCursorPolyDataAlgorithm;
+class myResliceCursorPolyDataAlgorithm;
 class vtkIdList;
 class vtkMatrix4x4;
 class vtkPlane;
 
-class VTKINTERACTIONWIDGETS_EXPORT vtkResliceCursorPicker : public vtkPicker
+class VTKINTERACTIONWIDGETS_EXPORT myResliceCursorPicker : public vtkPicker
 {
 public:
-  static vtkResliceCursorPicker *New();
-  vtkTypeMacro(vtkResliceCursorPicker, vtkPicker);
+  static myResliceCursorPicker *New();
+  vtkTypeMacro(myResliceCursorPicker, vtkPicker);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -61,9 +37,9 @@ public:
   // Description:
   // Set the reslice cursor algorithm. One must be set
   virtual void SetResliceCursorAlgorithm(
-      vtkResliceCursorPolyDataAlgorithm * );
+      myResliceCursorPolyDataAlgorithm * );
   vtkGetObjectMacro( ResliceCursorAlgorithm,
-                     vtkResliceCursorPolyDataAlgorithm );
+                     myResliceCursorPolyDataAlgorithm );
 
   virtual void SetTransformMatrix( vtkMatrix4x4 * );
 
@@ -74,8 +50,8 @@ public:
     double displayPos[2], double world[3], vtkRenderer *ren );
 
 protected:
-  vtkResliceCursorPicker();
-  ~vtkResliceCursorPicker();
+  myResliceCursorPicker();
+  ~myResliceCursorPicker();
 
   virtual int IntersectPolyDataWithLine(
       double p1[3], double p2[3], vtkPolyData *, double tol );
@@ -89,7 +65,7 @@ protected:
 private:
 
   vtkGenericCell *Cell; //used to accelerate picking
-  vtkResliceCursorPolyDataAlgorithm * ResliceCursorAlgorithm;
+  myResliceCursorPolyDataAlgorithm * ResliceCursorAlgorithm;
 
   int PickedAxis1;
   int PickedAxis2;
@@ -99,8 +75,8 @@ private:
   vtkPlane     * Plane;
 
 private:
-  vtkResliceCursorPicker(const vtkResliceCursorPicker&);  // Not implemented.
-  void operator=(const vtkResliceCursorPicker&);  // Not implemented.
+  myResliceCursorPicker(const myResliceCursorPicker&);  // Not implemented.
+  void operator=(const myResliceCursorPicker&);  // Not implemented.
 };
 
 #endif

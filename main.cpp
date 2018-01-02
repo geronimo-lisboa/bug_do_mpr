@@ -1,31 +1,31 @@
-#include <iostream>
-#include <map>
-#include <string>
-#include <itkImage.h>
-#include <vtkImageData.h>
-#include <vtkSmartPointer.h>
-#include <vtkImageImport.h>
+#include "iostream"
+#include "map"
+#include "string"
+#include "itkImage.h"
+#include "vtkImageData.h"
+#include "vtkSmartPointer.h"
+#include "vtkImageImport.h"
 #include "loadVolume.h"
-#include <vtkRenderWindow.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindowInteractor.h>
-#include <memory>
+#include "vtkRenderWindow.h"
+#include "vtkRenderer.h"
+#include "vtkRenderWindowInteractor.h"
+#include "memory"
 #include "myResliceImageViewer.h"
-#include <array>
+#include "array"
 #include "myResliceCursor.h"
-#include <vtkWidgetRepresentation.h>
+#include "vtkWidgetRepresentation.h"
 #include "myResliceCursorWidget.h"
-#include <vtkResliceCursorLineRepresentation.h>
-#include <vtkImageReslice.h>
-#include <boost/lexical_cast.hpp>
-#include <vtkResliceCursorActor.h>
-#include <vtkResliceCursorPolyDataAlgorithm.h>
-#include <vector>
-#include <vtkCommand.h>
-#include <vtkInteractorStyleImage.h>
-#include <vtkImageSlabReslice.h>
-#include <boost/assert.hpp>
-#include <itkResampleImageFilter.h>
+#include "myResliceCursorLineRepresentation.h"
+#include "vtkImageReslice.h"
+#include "boost/lexical_cast.hpp"
+#include "myResliceCursorActor.h"
+#include "myResliceCursorPolyDataAlgorithm.h"
+#include "vector"
+#include "vtkCommand.h"
+#include "vtkInteractorStyleImage.h"
+#include "vtkImageSlabReslice.h"
+#include "boost/assert.hpp"
+#include "itkResampleImageFilter.h"
 using namespace std;
 
 using boost::lexical_cast;
@@ -43,15 +43,15 @@ public:
 	virtual ~IMPRView(){};
 };
 
-class vtkResliceCursorCallback : public vtkCommand{
+class myResliceCursorCallback : public vtkCommand{
 private:
 	bool isUsingLowRes;
 	vector<shared_ptr<IMPRView>> MPRs;
 	double ww, wl;
-	vtkResliceCursorCallback();
+	myResliceCursorCallback();
 public:
-	static vtkResliceCursorCallback *New(){
-		return new vtkResliceCursorCallback();
+	static myResliceCursorCallback *New(){
+		return new myResliceCursorCallback();
 	}
 	void AddMPR(shared_ptr<IMPRView> m){
 		MPRs.push_back(m);
@@ -64,18 +64,18 @@ private:
 	vtkSmartPointer<myResliceImageViewer> resliceViewer;
 	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
 	vtkSmartPointer<myResliceCursor> sharedCursor;
-	vtkResliceCursorCallback *resliceCallback;
+	myResliceCursorCallback *resliceCallback;
 public:
 	MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id);
 	vtkSmartPointer<myResliceImageViewer> GetmyResliceImageViewer();
 	void Atualizar();
 	~MPRView(){};
-	void SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<vtkResliceCursorCallback> rcbk);
+	void SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<myResliceCursorCallback> rcbk);
 };
 
 class Sistema{
 private:
-	vtkSmartPointer<vtkResliceCursorCallback> resliceCursorCallback;
+	vtkSmartPointer<myResliceCursorCallback> resliceCursorCallback;
 	array<shared_ptr<MPRView>, 3> mprs;
 	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
 public:
@@ -129,7 +129,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	resliceViewer->SetResliceModeToOblique();
 	resliceViewer->SetInputData(imagemHiRes, imagemLowRes);
 	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
-	vtkResliceCursorLineRepresentation *tl = vtkResliceCursorLineRepresentation::SafeDownCast(r);
+	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
 	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetReslice());
 	BOOST_ASSERT((thickSlabReslice != nullptr));//sanity check do cast
 	cout << thickSlabReslice->GetInterpolationModeAsString() << endl;
@@ -138,7 +138,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	thickSlabReslice->SetSlabModeToMax();//Seta pra mip
 
 	thickSlabReslice->SetSlabNumberOfSlices(10);
-	vtkResliceCursorLineRepresentation *cursorRepresentation = vtkResliceCursorLineRepresentation::SafeDownCast(
+	myResliceCursorLineRepresentation *cursorRepresentation = myResliceCursorLineRepresentation::SafeDownCast(
 		resliceViewer->GetResliceCursorWidget()->GetRepresentation());
 	resliceViewer->GetResliceCursorWidget()->ManageWindowLevelOff();
 	cursorRepresentation->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(id);
@@ -157,7 +157,7 @@ void MPRView::Atualizar(){
 	resliceViewer->Render();
 }
 
-void MPRView::SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<vtkResliceCursorCallback> rcbk){
+void MPRView::SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<myResliceCursorCallback> rcbk){
 	resliceCallback = rcbk;
 	sharedCursor = _sharedCursor;
 	resliceViewer->SetResliceCursor(sharedCursor);
@@ -174,7 +174,7 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	mprs[0] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 0);
 	mprs[1] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 1);
 	mprs[2] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 2);
-	resliceCursorCallback = vtkSmartPointer<vtkResliceCursorCallback>::New();
+	resliceCursorCallback = vtkSmartPointer<myResliceCursorCallback>::New();
 
 	for (std::shared_ptr<MPRView> m : mprs){
 		m->SetCallbacks(mprs[0]->GetmyResliceImageViewer()->GetResliceCursor(),
@@ -184,7 +184,7 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	}
 }
 
-void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
+void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
 	AbortFlagOn();
 	cout << __FUNCTION__ << " - event = " << ev << endl;
 
@@ -205,7 +205,7 @@ void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, voi
 	}
 }
 
-vtkResliceCursorCallback::vtkResliceCursorCallback()
+myResliceCursorCallback::myResliceCursorCallback()
 	:isUsingLowRes(false){
 	ww = 350;
 	wl = 150;

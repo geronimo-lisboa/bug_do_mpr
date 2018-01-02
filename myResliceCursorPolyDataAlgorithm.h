@@ -1,52 +1,26 @@
-/*=========================================================================
 
-  Program:   Visualization Toolkit
-  Module:    vtkResliceCursorPolyDataAlgorithm.h
 
-  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
-  All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-// .NAME vtkResliceCursorPolyDataAlgorithm - generates a 2D reslice cursor polydata
-// .SECTION Description
-// vtkResliceCursorPolyDataAlgorithm is a class that generates a 2D
-// reslice cursor vtkPolyData, suitable for rendering within a
-// vtkResliceCursorActor. The class takes as input the reslice plane
-// normal index (an index into the normal plane maintained by the reslice
-// cursor object) and generates the polydata represeting the other two
-// reslice axes suitable for rendering on a slice through this plane.
-// The cursor consists of two intersection axes lines that meet at the
-// cursor focus. These lines may have a user defined thickness. They
-// need not be orthogonal to each other.
-// .SECTION see also
-// vtkResliceCursorActor vtkResliceCursor vtkResliceCursorWidget
-
-#ifndef vtkResliceCursorPolyDataAlgorithm_h
-#define vtkResliceCursorPolyDataAlgorithm_h
+#ifndef myResliceCursorPolyDataAlgorithm_h
+#define myResliceCursorPolyDataAlgorithm_h
 
 #include "vtkInteractionWidgetsModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 class vtkCutter;
-class vtkResliceCursor;
+class myResliceCursor;
 class vtkPlane;
 class vtkBox;
 class vtkClipPolyData;
 class vtkLinearExtrusionFilter;
 
-class VTKINTERACTIONWIDGETS_EXPORT vtkResliceCursorPolyDataAlgorithm : public vtkPolyDataAlgorithm
+class VTKINTERACTIONWIDGETS_EXPORT myResliceCursorPolyDataAlgorithm : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkResliceCursorPolyDataAlgorithm,vtkPolyDataAlgorithm);
+  vtkTypeMacro(myResliceCursorPolyDataAlgorithm,vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
-  static vtkResliceCursorPolyDataAlgorithm *New();
+  static myResliceCursorPolyDataAlgorithm *New();
 
   // Description:
   // Which of the 3 axes defines the reslice plane normal ?
@@ -68,8 +42,8 @@ public:
 
   // Description:
   // Set the Reslice cursor from which to generate the polydata representation
-  virtual void SetResliceCursor( vtkResliceCursor * );
-  vtkGetObjectMacro( ResliceCursor, vtkResliceCursor );
+  virtual void SetResliceCursor( myResliceCursor * );
+  vtkGetObjectMacro( ResliceCursor, myResliceCursor );
 
   // Description:
   // Set/Get the slice bounds, ie the slice of this view on which to display
@@ -104,8 +78,8 @@ public:
   virtual unsigned long int GetMTime();
 
 protected:
-  vtkResliceCursorPolyDataAlgorithm();
-  ~vtkResliceCursorPolyDataAlgorithm();
+  myResliceCursorPolyDataAlgorithm();
+  ~myResliceCursorPolyDataAlgorithm();
 
   int RequestData(vtkInformation*,
                   vtkInformationVector**,
@@ -119,7 +93,7 @@ protected:
   void BuildResliceSlabAxisTopology();
 
   int                ReslicePlaneNormal;
-  vtkResliceCursor * ResliceCursor;
+  myResliceCursor * ResliceCursor;
   vtkCutter        * Cutter;
   vtkPlane         * SlicePlane;
   vtkBox           * Box;
@@ -131,8 +105,8 @@ protected:
   vtkPolyData              *ThickAxes[2];
 
 private:
-  vtkResliceCursorPolyDataAlgorithm(const vtkResliceCursorPolyDataAlgorithm&);  // Not implemented.
-  void operator=(const vtkResliceCursorPolyDataAlgorithm&);  // Not implemented.
+  myResliceCursorPolyDataAlgorithm(const myResliceCursorPolyDataAlgorithm&);  // Not implemented.
+  void operator=(const myResliceCursorPolyDataAlgorithm&);  // Not implemented.
 
 };
 

@@ -1,30 +1,4 @@
-/*=========================================================================
 
-  Program:   Visualization Toolkit
-  Module:    vtkResliceCursor.h
-
-  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
-  All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-// .NAME vtkResliceCursor - Geometry for a reslice cursor
-// .SECTION Description
-// This class represents a reslice cursor. It consists of two cross
-// sectional hairs, with an optional thickness. The crosshairs
-// hairs may have a hole in the center. These may be translated or rotated
-// independent of each other in the view. The result is used to reslice
-// the data along these cross sections. This allows the user to perform
-// multi-planar thin or thick reformat of the data on an image view, rather
-// than a 3D view.
-// .SECTION See Also
-// vtkResliceCursorWidget vtkResliceCursor vtkResliceCursorPolyDataAlgorithm
-// vtkResliceCursorRepresentation vtkResliceCursorThickLineRepresentation
-// vtkResliceCursorActor vtkImagePlaneWidget
 
 #ifndef myResliceCursor_h
 #define myResliceCursor_h

@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkResliceImageViewer.cxx
+  Module:    myResliceImageViewer.cxx
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -18,10 +18,10 @@
 #include "vtkCommand.h"
 #include "vtkImageActor.h"
 #include "myResliceCursorWidget.h"
-#include "vtkResliceCursorLineRepresentation.h"
-#include "vtkResliceCursorThickLineRepresentation.h"
-#include "vtkResliceCursorActor.h"
-#include "vtkResliceCursorPolyDataAlgorithm.h"
+#include "myResliceCursorLineRepresentation.h"
+#include "myResliceCursorThickLineRepresentation.h"
+#include "myResliceCursorActor.h"
+#include "myResliceCursorPolyDataAlgorithm.h"
 #include "vtkPlane.h"
 #include "myResliceCursor.h"
 #include "vtkImageData.h"
@@ -46,11 +46,11 @@ vtkStandardNewMacro(myResliceImageViewer);
 // view, it moves one "normalized spacing" in the direction of the normal to
 // the resliced plane, provided the new center will continue to lie within the
 // volume.
-class vtkResliceImageViewerScrollCallback : public vtkCommand
+class myResliceImageViewerScrollCallback : public vtkCommand
 {
 public:
-  static vtkResliceImageViewerScrollCallback *New()
-    { return new vtkResliceImageViewerScrollCallback; }
+  static myResliceImageViewerScrollCallback *New()
+    { return new myResliceImageViewerScrollCallback; }
 
   virtual void Execute(vtkObject *, unsigned long ev, void*)
     {
@@ -75,7 +75,7 @@ public:
     this->SetAbortFlag(1);
     }
 
-  vtkResliceImageViewerScrollCallback():Viewer(0) {}
+  myResliceImageViewerScrollCallback():Viewer(0) {}
   myResliceImageViewer *Viewer;
 };
 
@@ -94,7 +94,7 @@ myResliceImageViewer::myResliceImageViewer()
   resliceCursor->SetThickMode(0);
   resliceCursor->SetThickness(10, 10, 10);
 
-  vtkSmartPointer< vtkResliceCursorLineRepresentation > resliceCursorRep = vtkSmartPointer< vtkResliceCursorLineRepresentation >::New();
+  vtkSmartPointer< myResliceCursorLineRepresentation > resliceCursorRep = vtkSmartPointer< myResliceCursorLineRepresentation >::New();
   resliceCursorRep->GetResliceCursorActor()->GetCursorAlgorithm()->SetResliceCursor(resliceCursor);
   resliceCursorRep->GetResliceCursorActor()->
       GetCursorAlgorithm()->SetReslicePlaneNormal(this->SliceOrientation);
@@ -105,7 +105,7 @@ myResliceImageViewer::myResliceImageViewer()
   this->Measurements = myResliceImageViewerMeasurements::New();
   this->Measurements->SetResliceImageViewer(this);
 
-  this->ScrollCallback = vtkResliceImageViewerScrollCallback::New();
+  this->ScrollCallback = myResliceImageViewerScrollCallback::New();
   this->ScrollCallback->Viewer = this;
   this->SliceScrollOnMouseWheel = 1;
 
@@ -137,22 +137,22 @@ void myResliceImageViewer::SetThickMode( int t )
     return;
     }
 
-  vtkSmartPointer< vtkResliceCursorLineRepresentation >
-    resliceCursorRepOld = vtkResliceCursorLineRepresentation::SafeDownCast(
+  vtkSmartPointer< myResliceCursorLineRepresentation >
+    resliceCursorRepOld = myResliceCursorLineRepresentation::SafeDownCast(
                           this->ResliceCursorWidget->GetRepresentation());
-  vtkSmartPointer< vtkResliceCursorLineRepresentation > resliceCursorRepNew;
+  vtkSmartPointer< myResliceCursorLineRepresentation > resliceCursorRepNew;
 
   this->GetResliceCursor()->SetThickMode(t);
 
   if (t)
     {
     resliceCursorRepNew = vtkSmartPointer<
-        vtkResliceCursorThickLineRepresentation >::New();
+        myResliceCursorThickLineRepresentation >::New();
     }
   else
     {
     resliceCursorRepNew = vtkSmartPointer<
-        vtkResliceCursorLineRepresentation >::New();
+        myResliceCursorLineRepresentation >::New();
     }
 
   int e = this->ResliceCursorWidget->GetEnabled();
@@ -175,8 +175,8 @@ void myResliceImageViewer::SetThickMode( int t )
 //----------------------------------------------------------------------------
 void myResliceImageViewer::SetResliceCursor(myResliceCursor * rc)
 {
-  vtkResliceCursorRepresentation *rep =
-    vtkResliceCursorRepresentation::SafeDownCast(
+  myResliceCursorRepresentation *rep =
+    myResliceCursorRepresentation::SafeDownCast(
           this->GetResliceCursorWidget()->GetRepresentation());
   rep->GetCursorAlgorithm()->SetResliceCursor(rc);
 
@@ -187,15 +187,15 @@ void myResliceImageViewer::SetResliceCursor(myResliceCursor * rc)
 //----------------------------------------------------------------------------
 int myResliceImageViewer::GetThickMode()
 {
-  return (vtkResliceCursorThickLineRepresentation::
+  return (myResliceCursorThickLineRepresentation::
     SafeDownCast(this->ResliceCursorWidget->GetRepresentation())) ? 1 : 0;
 }
 
 //----------------------------------------------------------------------------
 void myResliceImageViewer::SetLookupTable( vtkScalarsToColors * l )
 {
-  if (vtkResliceCursorRepresentation *rep =
-        vtkResliceCursorRepresentation::SafeDownCast(
+  if (myResliceCursorRepresentation *rep =
+        myResliceCursorRepresentation::SafeDownCast(
           this->ResliceCursorWidget->GetRepresentation()))
     {
     rep->SetLookupTable(l);
@@ -212,8 +212,8 @@ void myResliceImageViewer::SetLookupTable( vtkScalarsToColors * l )
 //----------------------------------------------------------------------------
 vtkScalarsToColors * myResliceImageViewer::GetLookupTable()
 {
-  if (vtkResliceCursorRepresentation *rep =
-        vtkResliceCursorRepresentation::SafeDownCast(
+  if (myResliceCursorRepresentation *rep =
+        myResliceCursorRepresentation::SafeDownCast(
           this->ResliceCursorWidget->GetRepresentation()))
     {
     return rep->GetLookupTable();
@@ -343,8 +343,8 @@ void myResliceImageViewer::UpdatePointPlacer()
   if (this->ResliceMode == RESLICE_OBLIQUE)
     {
     this->PointPlacer->SetProjectionNormalToOblique();
-    if (vtkResliceCursorRepresentation *rep =
-        vtkResliceCursorRepresentation::SafeDownCast(
+    if (myResliceCursorRepresentation *rep =
+        myResliceCursorRepresentation::SafeDownCast(
           this->ResliceCursorWidget->GetRepresentation()))
       {
       const int planeOrientation =
@@ -419,8 +419,8 @@ void myResliceImageViewer::Render()
 //----------------------------------------------------------------------------
 myResliceCursor * myResliceImageViewer::GetResliceCursor()
 {
-  if (vtkResliceCursorRepresentation *rep =
-        vtkResliceCursorRepresentation::SafeDownCast(
+  if (myResliceCursorRepresentation *rep =
+        myResliceCursorRepresentation::SafeDownCast(
           this->ResliceCursorWidget->GetRepresentation()))
     {
     return rep->GetResliceCursor();
@@ -445,8 +445,8 @@ void myResliceImageViewer::SetInputData(vtkImageData *imgHiRes, vtkImageData *im
 
   double range[2];
   in->GetScalarRange(range);
-  if (vtkResliceCursorRepresentation *rep =
-        vtkResliceCursorRepresentation::SafeDownCast(
+  if (myResliceCursorRepresentation *rep =
+        myResliceCursorRepresentation::SafeDownCast(
           this->ResliceCursorWidget->GetRepresentation()))
     {
     if (vtkImageReslice *reslice =
@@ -490,8 +490,8 @@ void myResliceImageViewer::SetColorWindow( double w )
   this->GetLookupTable()->SetRange( rmin, rmax );
 
   this->WindowLevel->SetWindow(w);
-  if (vtkResliceCursorRepresentation *rep =
-        vtkResliceCursorRepresentation::SafeDownCast(
+  if (myResliceCursorRepresentation *rep =
+        myResliceCursorRepresentation::SafeDownCast(
           this->ResliceCursorWidget->GetRepresentation()))
     {
     rep->SetWindowLevel(w, rep->GetLevel(), 1);
@@ -506,8 +506,8 @@ void myResliceImageViewer::SetColorLevel( double w )
   this->GetLookupTable()->SetRange( rmin, rmax );
 
   this->WindowLevel->SetLevel(w);
-  if (vtkResliceCursorRepresentation *rep =
-        vtkResliceCursorRepresentation::SafeDownCast(
+  if (myResliceCursorRepresentation *rep =
+        myResliceCursorRepresentation::SafeDownCast(
           this->ResliceCursorWidget->GetRepresentation()))
     {
     rep->SetWindowLevel(rep->GetWindow(), w, 1);
@@ -524,8 +524,8 @@ void myResliceImageViewer::Reset()
 vtkPlane * myResliceImageViewer::GetReslicePlane()
 {
   // Get the reslice plane
-  if (vtkResliceCursorRepresentation *rep =
-      vtkResliceCursorRepresentation::SafeDownCast(
+  if (myResliceCursorRepresentation *rep =
+      myResliceCursorRepresentation::SafeDownCast(
         this->ResliceCursorWidget->GetRepresentation()))
     {
     const int planeOrientation =

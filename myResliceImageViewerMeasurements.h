@@ -1,23 +1,4 @@
-/*=========================================================================
 
-  Program:   Visualization Toolkit
-  Module:    vtkResliceImageViewerMeasurements.h
-
-  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
-  All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-// .NAME vtkResliceImageViewerMeasurements - Manage measurements on a resliced image
-// .SECTION Description
-// This class manages measurements on the resliced image. It toggles the
-// the visibility of the measurements based on whether the resliced image
-// is the same orientation as when the measurement was initially placed.
-// .SECTION see also
 
 
 #ifndef myResliceImageViewerMeasurements_h
@@ -75,7 +56,7 @@ public:
 
   // Description:
   // Set the reslice image viewer. This is automatically done in the class
-  // vtkResliceImageViewer
+  // myResliceImageViewer
   virtual void SetResliceImageViewer(myResliceImageViewer *);
   vtkGetObjectMacro(ResliceImageViewer, myResliceImageViewer);
 

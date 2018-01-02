@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkResliceImageViewerMeasurements.cxx
+  Module:    myResliceImageViewerMeasurements.cxx
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -19,7 +19,7 @@
 #include "vtkCallbackCommand.h"
 #include "vtkImageActor.h"
 #include "myResliceCursorWidget.h"
-#include "vtkResliceCursorLineRepresentation.h"
+#include "myResliceCursorLineRepresentation.h"
 #include "vtkDistanceRepresentation.h"
 #include "vtkDistanceWidget.h"
 #include "vtkCaptionWidget.h"
@@ -36,8 +36,8 @@
 #include "vtkContourWidget.h"
 #include "vtkContourRepresentation.h"
 #include "vtkHandleRepresentation.h"
-#include "vtkResliceCursorActor.h"
-#include "vtkResliceCursorPolyDataAlgorithm.h"
+#include "myResliceCursorActor.h"
+#include "myResliceCursorPolyDataAlgorithm.h"
 #include "vtkPlane.h"
 #include "myResliceCursor.h"
 #include "vtkImageData.h"
@@ -47,7 +47,7 @@
 #include "vtkRenderer.h"
 #include "vtkSmartPointer.h"
 #include "vtkPlane.h"
-#include "vtkResliceImageViewer.h"
+#include "myResliceImageViewer.h"
 
 vtkStandardNewMacro(myResliceImageViewerMeasurements);
 
@@ -130,7 +130,7 @@ void myResliceImageViewerMeasurements
 void myResliceImageViewerMeasurements::Update()
 {
   if (this->ResliceImageViewer->GetResliceMode() !=
-    vtkResliceImageViewer::RESLICE_OBLIQUE)
+    myResliceImageViewer::RESLICE_OBLIQUE)
     {
     return; // nothing to do.
     }
@@ -333,8 +333,8 @@ bool myResliceImageViewerMeasurements
 bool myResliceImageViewerMeasurements
 ::IsPositionOnReslicedPlane( double p[3] )
 {
-  if (vtkResliceCursorRepresentation *rep =
-      vtkResliceCursorRepresentation::SafeDownCast(
+  if (myResliceCursorRepresentation *rep =
+      myResliceCursorRepresentation::SafeDownCast(
         this->ResliceImageViewer->GetResliceCursorWidget()
                                       ->GetRepresentation()))
     {

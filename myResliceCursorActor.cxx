@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkResliceCursorActor.cxx
+  Module:    myResliceCursorActor.cxx
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -13,27 +13,27 @@
 
 =========================================================================*/
 
-#include "vtkResliceCursorActor.h"
+#include "myResliceCursorActor.h"
 
 #include "vtkActor.h"
 #include "vtkPolyDataMapper.h"
-#include "vtkResliceCursorPolyDataAlgorithm.h"
+#include "myResliceCursorPolyDataAlgorithm.h"
 #include "vtkPlane.h"
 #include "vtkViewport.h"
-#include "vtkResliceCursor.h"
+#include "myResliceCursor.h"
 #include "vtkProperty.h"
 #include "vtkObjectFactory.h"
 #include "vtkBoundingBox.h"
 #include "vtkMath.h"
 #include "vtkMatrix4x4.h"
 
-vtkStandardNewMacro(vtkResliceCursorActor);
+vtkStandardNewMacro(myResliceCursorActor);
 
 
 // ----------------------------------------------------------------------------
-vtkResliceCursorActor::vtkResliceCursorActor()
+myResliceCursorActor::myResliceCursorActor()
 {
-  this->CursorAlgorithm = vtkResliceCursorPolyDataAlgorithm::New();
+  this->CursorAlgorithm = myResliceCursorPolyDataAlgorithm::New();
 
   for (int i = 0; i < 3; i++)
     {
@@ -77,7 +77,7 @@ vtkResliceCursorActor::vtkResliceCursorActor()
 }
 
 // ----------------------------------------------------------------------------
-vtkResliceCursorActor::~vtkResliceCursorActor()
+myResliceCursorActor::~myResliceCursorActor()
 {
   for (int i = 0; i < 3; i++)
     {
@@ -94,7 +94,7 @@ vtkResliceCursorActor::~vtkResliceCursorActor()
 // ----------------------------------------------------------------------------
 // Description:
 // Support the standard render methods.
-int vtkResliceCursorActor::RenderOpaqueGeometry(vtkViewport *viewport)
+int myResliceCursorActor::RenderOpaqueGeometry(vtkViewport *viewport)
 {
   int result=0;
 
@@ -122,13 +122,13 @@ int vtkResliceCursorActor::RenderOpaqueGeometry(vtkViewport *viewport)
 // ----------------------------------------------------------------------------
 // Description:
 // Does this prop have some translucent polygonal geometry? No.
-int vtkResliceCursorActor::HasTranslucentPolygonalGeometry()
+int myResliceCursorActor::HasTranslucentPolygonalGeometry()
 {
   return false;
 }
 
 //-----------------------------------------------------------------------------
-void vtkResliceCursorActor::ReleaseGraphicsResources(vtkWindow *window)
+void myResliceCursorActor::ReleaseGraphicsResources(vtkWindow *window)
 {
   for (int i = 0; i < 3; i++)
     {
@@ -139,7 +139,7 @@ void vtkResliceCursorActor::ReleaseGraphicsResources(vtkWindow *window)
 
 //-------------------------------------------------------------------------
 // Get the bounds for this Actor as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
-double *vtkResliceCursorActor::GetBounds()
+double *myResliceCursorActor::GetBounds()
 {
   // we cannot initialize the Bounds the same way vtkBoundingBox does because
   // vtkProp3D::GetLength() does not check if the Bounds are initialized or
@@ -177,7 +177,7 @@ double *vtkResliceCursorActor::GetBounds()
 }
 
 //-------------------------------------------------------------------------
-unsigned long int vtkResliceCursorActor::GetMTime()
+unsigned long int myResliceCursorActor::GetMTime()
 {
   unsigned long mTime=this->Superclass::GetMTime();
   if (this->CursorAlgorithm)
@@ -194,21 +194,21 @@ unsigned long int vtkResliceCursorActor::GetMTime()
 }
 
 // ----------------------------------------------------------------------------
-vtkProperty *vtkResliceCursorActor::GetCenterlineProperty( int i )
+vtkProperty *myResliceCursorActor::GetCenterlineProperty( int i )
 {
   return this->CenterlineProperty[i];
 }
 
 // ----------------------------------------------------------------------------
-vtkProperty *vtkResliceCursorActor::GetThickSlabProperty( int i )
+vtkProperty *myResliceCursorActor::GetThickSlabProperty( int i )
 {
   return this->ThickSlabProperty[i];
 }
 
 // ----------------------------------------------------------------------------
-void vtkResliceCursorActor::UpdateHoleSize( vtkViewport * v )
+void myResliceCursorActor::UpdateHoleSize( vtkViewport * v )
 {
-  vtkResliceCursor * r = this->CursorAlgorithm->GetResliceCursor();
+  myResliceCursor * r = this->CursorAlgorithm->GetResliceCursor();
 
   if (r->GetHoleWidthInPixels() && r->GetHole() && v)
     {
@@ -241,7 +241,7 @@ void vtkResliceCursorActor::UpdateHoleSize( vtkViewport * v )
 }
 
 // ----------------------------------------------------------------------------
-void vtkResliceCursorActor::UpdateViewProps(vtkViewport *v)
+void myResliceCursorActor::UpdateViewProps(vtkViewport *v)
 {
   if (this->CursorAlgorithm->GetResliceCursor() == 0)
     {
@@ -296,7 +296,7 @@ void vtkResliceCursorActor::UpdateViewProps(vtkViewport *v)
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorActor::SetUserMatrix(vtkMatrix4x4 *m)
+void myResliceCursorActor::SetUserMatrix(vtkMatrix4x4 *m)
 {
   this->CursorThickSlabActor[0]->SetUserMatrix(m);
   this->CursorThickSlabActor[1]->SetUserMatrix(m);
@@ -309,7 +309,7 @@ void vtkResliceCursorActor::SetUserMatrix(vtkMatrix4x4 *m)
 }
 
 //-------------------------------------------------------------------------
-vtkActor * vtkResliceCursorActor::GetCenterlineActor( int axis )
+vtkActor * myResliceCursorActor::GetCenterlineActor( int axis )
 {
   return this->CursorCenterlineActor[axis];
 }
@@ -328,7 +328,7 @@ vtkActor * vtkResliceCursorActor::GetCenterlineActor( int axis )
     }
 
 //-------------------------------------------------------------------------
-void vtkResliceCursorActor::PrintSelf(ostream& os, vtkIndent indent)
+void myResliceCursorActor::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 

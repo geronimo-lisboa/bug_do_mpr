@@ -1,7 +1,7 @@
 /*=========================================================================
 
 Program:   Visualization Toolkit
-Module:    vtkResliceCursorWidget.cxx
+Module:    myResliceCursorWidget.cxx
 
 Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
 All rights reserved.
@@ -14,7 +14,7 @@ PURPOSE.  See the above copyright notice for more information.
 =========================================================================*/
 #include "myResliceCursorWidget.h"
 #include <iostream>
-#include "vtkResliceCursorLineRepresentation.h"
+#include "myResliceCursorLineRepresentation.h"
 #include "vtkCommand.h"
 #include "myResliceCursor.h"
 #include "vtkCallbackCommand.h"
@@ -85,7 +85,7 @@ void myResliceCursorWidget::CreateDefaultRepresentation()
 {
 	if (!this->WidgetRep)
 	{
-		this->WidgetRep = vtkResliceCursorLineRepresentation::New();
+		this->WidgetRep = myResliceCursorLineRepresentation::New();
 	}
 }
 
@@ -94,17 +94,17 @@ void myResliceCursorWidget::SetCursor(int cState)
 {
 	switch (cState)
 	{
-	case vtkResliceCursorRepresentation::OnAxis1:
-	case vtkResliceCursorRepresentation::OnAxis2:
+	case myResliceCursorRepresentation::OnAxis1:
+	case myResliceCursorRepresentation::OnAxis2:
 		this->RequestCursorShape(VTK_CURSOR_HAND);
 		break;
-	case vtkResliceCursorRepresentation::OnCenter:
+	case myResliceCursorRepresentation::OnCenter:
 		if (vtkEvent::GetModifier(this->Interactor) != vtkEvent::ControlModifier)
 		{
 			this->RequestCursorShape(VTK_CURSOR_SIZEALL);
 		}
 		break;
-	case vtkResliceCursorRepresentation::Outside:
+	case myResliceCursorRepresentation::Outside:
 	default:
 		this->RequestCursorShape(VTK_CURSOR_DEFAULT);
 	}
@@ -114,20 +114,20 @@ void myResliceCursorWidget::SetCursor(int cState)
 void myResliceCursorWidget::ResizeThicknessAction(vtkAbstractWidget *w)
 {
 	myResliceCursorWidget *self = reinterpret_cast<myResliceCursorWidget*>(w);
-	vtkResliceCursorRepresentation *rep =
-		reinterpret_cast<vtkResliceCursorRepresentation*>(self->WidgetRep);
+	myResliceCursorRepresentation *rep =
+		reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
 
 	int X = self->Interactor->GetEventPosition()[0];
 	int Y = self->Interactor->GetEventPosition()[1];
 
 	rep->ComputeInteractionState(X, Y, self->ModifierActive);
 
-	if (self->WidgetRep->GetInteractionState() == vtkResliceCursorRepresentation::Outside || rep->GetResliceCursor()->GetThickMode() == 0)
+	if (self->WidgetRep->GetInteractionState() == myResliceCursorRepresentation::Outside || rep->GetResliceCursor()->GetThickMode() == 0)
 	{
 		return;
 	}
 
-	rep->SetManipulationMode(vtkResliceCursorRepresentation::ResizeThickness);
+	rep->SetManipulationMode(myResliceCursorRepresentation::ResizeThickness);
 
 	self->GrabFocus(self->EventCallbackCommand);
 	double eventPos[2];
@@ -163,8 +163,8 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 {
 	std::cout << __FUNCTION__ << std::endl;
 	myResliceCursorWidget *self = reinterpret_cast<myResliceCursorWidget*>(w);
-	vtkResliceCursorRepresentation *rep =
-		reinterpret_cast<vtkResliceCursorRepresentation*>(self->WidgetRep);
+	myResliceCursorRepresentation *rep =
+		reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
 
 	int X = self->Interactor->GetEventPosition()[0];
 	int Y = self->Interactor->GetEventPosition()[1];
@@ -173,7 +173,7 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 	rep->ComputeInteractionState(X, Y, self->ModifierActive);
 	int interactionState = rep->GetInteractionState();
 	std::cout << "---interaction state = " << interactionState << std::endl;
-	if (self->WidgetRep->GetInteractionState() == vtkResliceCursorRepresentation::Outside)
+	if (self->WidgetRep->GetInteractionState() == myResliceCursorRepresentation::Outside)
 	{
 		if (self->GetManageWindowLevel() && rep->GetShowReslicedImage())
 		{
@@ -182,30 +182,30 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 		}
 		else
 		{
-			rep->SetManipulationMode(vtkResliceCursorRepresentation::None);
-			std::cout << "vtkResliceCursorRepresentation::None" << std::endl;
+			rep->SetManipulationMode(myResliceCursorRepresentation::None);
+			std::cout << "myResliceCursorRepresentation::None" << std::endl;
 
 			return;
 		}
 	}
 	if (interactionState == 4)//CENTER
 	{
-		rep->SetManipulationMode(vtkResliceCursorRepresentation::PanAndRotate);
+		rep->SetManipulationMode(myResliceCursorRepresentation::PanAndRotate);
 	}
 	if (interactionState == 5 || interactionState == 6)//OS DOIS EIXOS
 	{
 		std::cout << "[" << __FUNCTION__ << ", ln:" << __LINE__ << "] Comecei o reslice, a troca de qualidade ocorreria aqui" << std::endl;
 		rep->ComputeInteractionState(X, Y, 2);
-		rep->SetManipulationMode(vtkResliceCursorLineRepresentation::RotateBothAxes);
+		rep->SetManipulationMode(myResliceCursorLineRepresentation::RotateBothAxes);
 	}
 	// Modificado para eu poder fazer a rotação dos dois planos e manter o pan
 	// else
 	// {
-	//   rep->SetManipulationMode(vtkResliceCursorRepresentation::PanAndRotate);
-	//std::cout << "vtkResliceCursorRepresentation::PanAndRotate" << std::endl;
+	//   rep->SetManipulationMode(myResliceCursorRepresentation::PanAndRotate);
+	//std::cout << "myResliceCursorRepresentation::PanAndRotate" << std::endl;
 	// }
 
-	if (rep->GetManipulationMode() == vtkResliceCursorRepresentation::None)
+	if (rep->GetManipulationMode() == myResliceCursorRepresentation::None)
 	{
 		std::cout << "trap" << std::endl;
 		return;
@@ -236,8 +236,8 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 void myResliceCursorWidget::RotateAction(vtkAbstractWidget *w)
 {
 	myResliceCursorWidget *self = reinterpret_cast<myResliceCursorWidget*>(w);//ROTATE ACTION INVOCADA PELO STACK DE EVENTOS
-	vtkResliceCursorRepresentation *rep =
-		reinterpret_cast<vtkResliceCursorRepresentation*>(self->WidgetRep);
+	myResliceCursorRepresentation *rep =
+		reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
 
 	int X = self->Interactor->GetEventPosition()[0];
 	int Y = self->Interactor->GetEventPosition()[1];
@@ -247,12 +247,12 @@ void myResliceCursorWidget::RotateAction(vtkAbstractWidget *w)
 	rep->ComputeInteractionState(X, Y, self->ModifierActive);
 
 	if (self->WidgetRep->GetInteractionState()
-		== vtkResliceCursorRepresentation::Outside)
+		== myResliceCursorRepresentation::Outside)
 	{
 		return;
 	}
 
-	rep->SetManipulationMode(vtkResliceCursorRepresentation::RotateBothAxes);
+	rep->SetManipulationMode(myResliceCursorRepresentation::RotateBothAxes);
 
 	self->GrabFocus(self->EventCallbackCommand);
 	double eventPos[2];
@@ -279,8 +279,8 @@ void myResliceCursorWidget::RotateAction(vtkAbstractWidget *w)
 void myResliceCursorWidget::MoveAction(vtkAbstractWidget *w)
 {
 	myResliceCursorWidget *self = reinterpret_cast<myResliceCursorWidget*>(w);
-	vtkResliceCursorRepresentation *rep =
-		reinterpret_cast<vtkResliceCursorRepresentation*>(self->WidgetRep);
+	myResliceCursorRepresentation *rep =
+		reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
 
 	// compute some info we need for all cases
 	int X = self->Interactor->GetEventPosition()[0];
@@ -323,7 +323,7 @@ void myResliceCursorWidget::EndSelectAction(vtkAbstractWidget *w)
 {
 	std::cout<<"["<<__FUNCTION__<<", ln:"<<__LINE__<<"] Terminei o reslice, a troca de qualidade ocorreria aqui" << std::endl;
 	myResliceCursorWidget *self = static_cast<myResliceCursorWidget*>(w);
-	vtkResliceCursorRepresentation *rep = reinterpret_cast<vtkResliceCursorRepresentation*>(self->WidgetRep);
+	myResliceCursorRepresentation *rep = reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
 
 	if (self->WidgetState != myResliceCursorWidget::Active)
 	{
@@ -355,7 +355,7 @@ void myResliceCursorWidget::EndSelectAction(vtkAbstractWidget *w)
 	self->EndInteraction();
 	self->InvokeEvent(vtkCommand::EndInteractionEvent, NULL);
 	self->WidgetState = myResliceCursorWidget::Start;
-	rep->SetManipulationMode(vtkResliceCursorRepresentation::None);
+	rep->SetManipulationMode(myResliceCursorRepresentation::None);
 
 	self->Render();
 
@@ -378,8 +378,8 @@ void myResliceCursorWidget::ResetResliceCursorAction(vtkAbstractWidget *w)
 //-------------------------------------------------------------------------
 void myResliceCursorWidget::ResetResliceCursor()
 {
-	vtkResliceCursorRepresentation *rep =
-		reinterpret_cast<vtkResliceCursorRepresentation*>(this->WidgetRep);
+	myResliceCursorRepresentation *rep =
+		reinterpret_cast<myResliceCursorRepresentation*>(this->WidgetRep);
 
 	if (!rep->GetResliceCursor())
 	{
@@ -394,8 +394,8 @@ void myResliceCursorWidget::ResetResliceCursor()
 //----------------------------------------------------------------------------
 void myResliceCursorWidget::StartWindowLevel()
 {
-	vtkResliceCursorRepresentation *rep =
-		reinterpret_cast<vtkResliceCursorRepresentation*>(this->WidgetRep);
+	myResliceCursorRepresentation *rep =
+		reinterpret_cast<myResliceCursorRepresentation*>(this->WidgetRep);
 
 	int X = this->Interactor->GetEventPosition()[0];
 	int Y = this->Interactor->GetEventPosition()[1];
@@ -403,11 +403,11 @@ void myResliceCursorWidget::StartWindowLevel()
 	// Okay, make sure that the pick is in the current renderer
 	if (!this->CurrentRenderer || !this->CurrentRenderer->IsInViewport(X, Y))
 	{
-		rep->SetManipulationMode(vtkResliceCursorRepresentation::None);
+		rep->SetManipulationMode(myResliceCursorRepresentation::None);
 		return;
 	}
 
-	rep->SetManipulationMode(vtkResliceCursorRepresentation::WindowLevelling);
+	rep->SetManipulationMode(myResliceCursorRepresentation::WindowLevelling);
 
 	rep->ActivateText(1);
 	rep->ManageTextDisplay();
@@ -419,26 +419,26 @@ void myResliceCursorWidget::InvokeAnEvent()
 	// We invoke the appropriate event. In cases where the cursor is moved
 	// around, or rotated, also have the reslice cursor invoke an event.
 
-	vtkResliceCursorRepresentation *rep =
-		reinterpret_cast<vtkResliceCursorRepresentation*>(this->WidgetRep);
+	myResliceCursorRepresentation *rep =
+		reinterpret_cast<myResliceCursorRepresentation*>(this->WidgetRep);
 	if (rep)
 	{
 		int mode = rep->GetManipulationMode();
-		if (mode == vtkResliceCursorRepresentation::WindowLevelling)
+		if (mode == myResliceCursorRepresentation::WindowLevelling)
 		{
 			this->InvokeEvent(WindowLevelEvent, NULL);
 		}
-		else if (mode == vtkResliceCursorRepresentation::PanAndRotate)
+		else if (mode == myResliceCursorRepresentation::PanAndRotate)
 		{
 			this->InvokeEvent(ResliceAxesChangedEvent, NULL);
 			rep->GetResliceCursor()->InvokeEvent(ResliceAxesChangedEvent, NULL);
 		}
-		else if (mode == vtkResliceCursorRepresentation::RotateBothAxes)
+		else if (mode == myResliceCursorRepresentation::RotateBothAxes)
 		{
 			this->InvokeEvent(ResliceAxesChangedEvent, NULL);
 			rep->GetResliceCursor()->InvokeEvent(ResliceAxesChangedEvent, NULL);
 		}
-		else if (mode == vtkResliceCursorRepresentation::ResizeThickness)
+		else if (mode == myResliceCursorRepresentation::ResizeThickness)
 		{
 			this->InvokeEvent(ResliceThicknessChangedEvent, NULL);
 			rep->GetResliceCursor()->InvokeEvent(ResliceAxesChangedEvent, NULL);

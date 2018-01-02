@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkResliceCursorLineRepresentation.cxx
+  Module:    myResliceCursorLineRepresentation.cxx
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,7 +12,7 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkResliceCursorLineRepresentation.h"
+#include "myResliceCursorLineRepresentation.h"
 #include "vtkHandleRepresentation.h"
 #include "vtkCoordinate.h"
 #include "vtkRenderer.h"
@@ -21,7 +21,7 @@
 #include "vtkLine.h"
 #include "vtkTextProperty.h"
 #include "vtkWindow.h"
-#include "vtkResliceCursorPicker.h"
+#include "myResliceCursorPicker.h"
 #include "vtkPlaneSource.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
@@ -35,9 +35,9 @@
 #include "vtkPointHandleRepresentation2D.h"
 #include "vtkObjectFactory.h"
 #include "vtkInteractorObserver.h"
-#include "vtkResliceCursorActor.h"
-#include "vtkResliceCursorPolyDataAlgorithm.h"
-#include "vtkResliceCursor.h"
+#include "myResliceCursorActor.h"
+#include "myResliceCursorPolyDataAlgorithm.h"
+#include "myResliceCursor.h"
 #include "vtkBoundingBox.h"
 #include "vtkMatrix4x4.h"
 #include "vtkImageActor.h"
@@ -47,15 +47,15 @@
 
 #include <sstream>
 
-vtkStandardNewMacro(vtkResliceCursorLineRepresentation);
+vtkStandardNewMacro(myResliceCursorLineRepresentation);
 
 
 //----------------------------------------------------------------------
-vtkResliceCursorLineRepresentation::vtkResliceCursorLineRepresentation()
+myResliceCursorLineRepresentation::myResliceCursorLineRepresentation()
 {
-  this->ResliceCursorActor = vtkResliceCursorActor::New();
+  this->ResliceCursorActor = myResliceCursorActor::New();
 
-  this->Picker = vtkResliceCursorPicker::New();
+  this->Picker = myResliceCursorPicker::New();
   this->Picker->SetTolerance(0.025);
 
   this->MatrixReslice      = vtkMatrix4x4::New();
@@ -64,7 +64,7 @@ vtkResliceCursorLineRepresentation::vtkResliceCursorLineRepresentation()
 }
 
 //----------------------------------------------------------------------
-vtkResliceCursorLineRepresentation::~vtkResliceCursorLineRepresentation()
+myResliceCursorLineRepresentation::~myResliceCursorLineRepresentation()
 {
   this->ResliceCursorActor->Delete();
   this->Picker->Delete();
@@ -74,23 +74,23 @@ vtkResliceCursorLineRepresentation::~vtkResliceCursorLineRepresentation()
 }
 
 //----------------------------------------------------------------------
-vtkResliceCursor * vtkResliceCursorLineRepresentation::GetResliceCursor()
+myResliceCursor * myResliceCursorLineRepresentation::GetResliceCursor()
 {
   return this->ResliceCursorActor->GetCursorAlgorithm()->GetResliceCursor();
 }
 
 //----------------------------------------------------------------------
-int vtkResliceCursorLineRepresentation::
+int myResliceCursorLineRepresentation::
 ComputeInteractionState(int X, int Y, int modify)
 {
-  this->InteractionState = vtkResliceCursorLineRepresentation::Outside;
+  this->InteractionState = myResliceCursorLineRepresentation::Outside;
 
   if (!this->Renderer)
     {
     return this->InteractionState;
     }
 
-  vtkResliceCursor * rc = this->GetResliceCursor();
+  myResliceCursor * rc = this->GetResliceCursor();
   if (!rc)
     {
     vtkErrorMacro( << "Reslice cursor not set!" );
@@ -126,15 +126,15 @@ ComputeInteractionState(int X, int Y, int modify)
 
   if (pickedCenter)
     {
-    this->InteractionState = vtkResliceCursorLineRepresentation::OnCenter;
+    this->InteractionState = myResliceCursorLineRepresentation::OnCenter;
     }
   else if (pickedAxis1)
     {
-    this->InteractionState = vtkResliceCursorLineRepresentation::OnAxis1;
+    this->InteractionState = myResliceCursorLineRepresentation::OnAxis1;
     }
   else if (pickedAxis2)
     {
-    this->InteractionState = vtkResliceCursorLineRepresentation::OnAxis2;
+    this->InteractionState = myResliceCursorLineRepresentation::OnAxis2;
     }
 
   return this->InteractionState;
@@ -142,7 +142,7 @@ ComputeInteractionState(int X, int Y, int modify)
 
 //----------------------------------------------------------------------
 // Record the current event position, and the center position.
-void vtkResliceCursorLineRepresentation
+void myResliceCursorLineRepresentation
 ::StartWidgetInteraction(double startEventPos[2])
 {
   this->StartEventPosition[0] = startEventPos[0];
@@ -155,7 +155,7 @@ void vtkResliceCursorLineRepresentation
     }
   else
     {
-    if ( vtkResliceCursor *rc = this->GetResliceCursor() )
+    if ( myResliceCursor *rc = this->GetResliceCursor() )
       {
       rc->GetCenter(this->StartCenterPosition);
       }
@@ -166,9 +166,9 @@ void vtkResliceCursorLineRepresentation
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorLineRepresentation::WidgetInteraction(double e[2])
+void myResliceCursorLineRepresentation::WidgetInteraction(double e[2])
 {
-  vtkResliceCursor *rc = this->GetResliceCursor();
+  myResliceCursor *rc = this->GetResliceCursor();
 
   if (this->ManipulationMode == WindowLevelling)
     {
@@ -190,7 +190,7 @@ void vtkResliceCursorLineRepresentation::WidgetInteraction(double e[2])
 
   if (rc->GetThickMode() &&
         this->ManipulationMode ==
-          vtkResliceCursorRepresentation::ResizeThickness)
+          myResliceCursorRepresentation::ResizeThickness)
     {
 
     double sf = 1.0;
@@ -271,10 +271,10 @@ void vtkResliceCursorLineRepresentation::WidgetInteraction(double e[2])
 }
 
 //----------------------------------------------------------------------
-double vtkResliceCursorLineRepresentation
+double myResliceCursorLineRepresentation
 ::RotateAxis( double e[2], int axis )
 {
-  vtkResliceCursor *rc = this->GetResliceCursor();
+  myResliceCursor *rc = this->GetResliceCursor();
 
   double center[3];
   rc->GetCenter(center);
@@ -331,17 +331,17 @@ double vtkResliceCursorLineRepresentation
 
 //----------------------------------------------------------------------
 // Get the plane normal to the viewing axis.
-vtkResliceCursorPolyDataAlgorithm *
-vtkResliceCursorLineRepresentation::GetCursorAlgorithm()
+myResliceCursorPolyDataAlgorithm *
+myResliceCursorLineRepresentation::GetCursorAlgorithm()
 {
   return this->ResliceCursorActor->GetCursorAlgorithm();
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorLineRepresentation
+void myResliceCursorLineRepresentation
 ::RotateAxis( int axis, double angle )
 {
-  vtkResliceCursor * rc = this->GetResliceCursor();
+  myResliceCursor * rc = this->GetResliceCursor();
   vtkPlane * planeToBeRotated = rc->GetPlane(axis);
 
   const int rcPlaneIdx = this->ResliceCursorActor->
@@ -359,7 +359,7 @@ void vtkResliceCursorLineRepresentation
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorLineRepresentation
+void myResliceCursorLineRepresentation
 ::RotateVectorAboutVector( double vectorToBeRotated[3],
                            double axis[3], // vector about which we rotate
                            double angle, // angle in radians
@@ -406,7 +406,7 @@ void vtkResliceCursorLineRepresentation
 }
 
 //----------------------------------------------------------------------
-int vtkResliceCursorLineRepresentation
+int myResliceCursorLineRepresentation
 ::DisplayToReslicePlaneIntersection(
     double displayPos[2], double intersectionPos[3] )
 {
@@ -435,7 +435,7 @@ int vtkResliceCursorLineRepresentation
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorLineRepresentation::BuildRepresentation()
+void myResliceCursorLineRepresentation::BuildRepresentation()
 {
   if ( this->GetMTime() > this->BuildTime ||
        this->GetResliceCursor()->GetMTime() > this->BuildTime ||
@@ -450,7 +450,7 @@ void vtkResliceCursorLineRepresentation::BuildRepresentation()
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorLineRepresentation::ReleaseGraphicsResources(vtkWindow *w)
+void myResliceCursorLineRepresentation::ReleaseGraphicsResources(vtkWindow *w)
 {
   this->ResliceCursorActor->ReleaseGraphicsResources(w);
   this->TexturePlaneActor->ReleaseGraphicsResources(w);
@@ -460,7 +460,7 @@ void vtkResliceCursorLineRepresentation::ReleaseGraphicsResources(vtkWindow *w)
 
 
 //----------------------------------------------------------------------
-int vtkResliceCursorLineRepresentation::RenderOverlay(vtkViewport *viewport)
+int myResliceCursorLineRepresentation::RenderOverlay(vtkViewport *viewport)
 {
   int count = 0;
 
@@ -481,14 +481,14 @@ int vtkResliceCursorLineRepresentation::RenderOverlay(vtkViewport *viewport)
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorLineRepresentation::SetUserMatrix(vtkMatrix4x4 *m)
+void myResliceCursorLineRepresentation::SetUserMatrix(vtkMatrix4x4 *m)
 {
   this->TexturePlaneActor->SetUserMatrix(m);
   this->ResliceCursorActor->SetUserMatrix(m);
 }
 
 //----------------------------------------------------------------------
-int vtkResliceCursorLineRepresentation
+int myResliceCursorLineRepresentation
 ::RenderOpaqueGeometry(vtkViewport *viewport)
 {
   this->BuildRepresentation();
@@ -541,11 +541,11 @@ int vtkResliceCursorLineRepresentation
 
 //-------------------------------------------------------------------------
 // Get the bounds for this Actor as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
-double *vtkResliceCursorLineRepresentation::GetBounds()
+double *myResliceCursorLineRepresentation::GetBounds()
 {
   vtkMath::UninitializeBounds(this->InitialBounds);
 
-  if (vtkResliceCursor *r = this->GetResliceCursor())
+  if (myResliceCursor *r = this->GetResliceCursor())
     {
     r->GetImage()->GetBounds(this->InitialBounds);
     }
@@ -560,7 +560,7 @@ double *vtkResliceCursorLineRepresentation::GetBounds()
 }
 
 //-----------------------------------------------------------------------------
-int vtkResliceCursorLineRepresentation::RenderTranslucentPolygonalGeometry(
+int myResliceCursorLineRepresentation::RenderTranslucentPolygonalGeometry(
   vtkViewport *viewport)
 {
   int count = 0;
@@ -583,7 +583,7 @@ int vtkResliceCursorLineRepresentation::RenderTranslucentPolygonalGeometry(
 }
 
 //-----------------------------------------------------------------------------
-int vtkResliceCursorLineRepresentation::HasTranslucentPolygonalGeometry()
+int myResliceCursorLineRepresentation::HasTranslucentPolygonalGeometry()
 {
   return (this->ResliceCursorActor->HasTranslucentPolygonalGeometry() ||
     (this->ImageActor->HasTranslucentPolygonalGeometry()
@@ -593,12 +593,12 @@ int vtkResliceCursorLineRepresentation::HasTranslucentPolygonalGeometry()
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorLineRepresentation::Highlight(int )
+void myResliceCursorLineRepresentation::Highlight(int )
 {
 }
 
 //----------------------------------------------------------------------
-void vtkResliceCursorLineRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void myResliceCursorLineRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   //Superclass typedef defined in vtkTypeMacro() found in vtkSetGet.h
   this->Superclass::PrintSelf(os,indent);
