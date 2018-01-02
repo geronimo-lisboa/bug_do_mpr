@@ -42,6 +42,7 @@ public:
 
 class vtkResliceCursorCallback : public vtkCommand{
 private:
+	bool isUsingLowRes;
 	vector<shared_ptr<IMPRView>> MPRs;
 	double ww, wl;
 	vtkResliceCursorCallback();
@@ -156,7 +157,6 @@ void MPRView::SetCallbacks(vtkSmartPointer<vtkResliceCursor> _sharedCursor, vtkS
 	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::WindowLevelEvent, resliceCallback);
 	resliceViewer->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceAxesChangedEvent, resliceCallback);
 	resliceViewer->GetInteractorStyle()->AddObserver(vtkCommand::WindowLevelEvent, resliceCallback);
-
 }
 
 Sistema::Sistema(vtkSmartPointer<vtkImageData> img){
@@ -174,10 +174,12 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> img){
 	}
 }
 
-void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long event, void* calldata){
-	AbortFlagOn();
+void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
+	AbortFlagOff();
+	cout << __FUNCTION__ << " - event = " << ev << endl;
+
 	vtkInteractorStyleImage *i = vtkInteractorStyleImage::SafeDownCast(caller);
-	if (i){
+	if (i){//Se isso é verdadeiro é pq é operação de Window/Level
 		int *p1 = i->GetInteractor()->GetEventPosition();
 		int *p2 = i->GetInteractor()->GetLastEventPosition();
 		int dp[2];
@@ -193,9 +195,10 @@ void vtkResliceCursorCallback::Execute(vtkObject * caller, unsigned long event, 
 	}
 }
 
-vtkResliceCursorCallback::vtkResliceCursorCallback(){
-	ww = 1700;
-	wl = 1200;
+vtkResliceCursorCallback::vtkResliceCursorCallback()
+	:isUsingLowRes(false){
+	ww = 350;
+	wl = 150;
 }
 
 
