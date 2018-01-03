@@ -123,16 +123,6 @@ myResliceCursorRepresentation::myResliceCursorRepresentation()
 
   // Represent the text: annotation for cursor position and W/L
 
-  letraEsquerda = vtkSmartPointer<vtkTextActor>::New();
-  letraEsquerda->SetInput("");
-  vtkTextProperty* p = letraEsquerda->GetTextProperty();
-  p->SetColor(1, 0, 0);
-  p->SetBackgroundOpacity(0);
-  p->SetFontSize(12);
-  p->BoldOn();
-  p->SetFontFamilyAsString("Arial");
-  letraEsquerda->SetDisplayPosition(100,100);
-
   this->DisplayText = 1;
   this->TextActor = vtkTextActor::New();
   this->GenerateText();
@@ -145,9 +135,7 @@ myResliceCursorRepresentation::~myResliceCursorRepresentation()
   this->ThicknessTextMapper->Delete();
   this->ThicknessTextActor->Delete();
 
-  this->OrientationTextProperty->Delete();
-  this->OrientationTextMapper->Delete();
-  this->OrientationTextActor->Delete();
+
 
   this->SetThicknessLabelFormat(0);
   this->ImageActor->Delete();
