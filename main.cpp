@@ -31,7 +31,7 @@ using namespace std;
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
-itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator = 10.0f);
+itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator = 3.0f);
 
 class IMPRView{
 protected:

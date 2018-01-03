@@ -46,9 +46,15 @@ void myResliceCursorThickLineRepresentation::SetResliceParameters( double output
 	vtkImageSlabReslice *thickSlabReslice = nullptr;
 	if (UseLowRes){//É para usar a low res
 		thickSlabReslice = vtkImageSlabReslice::SafeDownCast(this->ResliceLowRes);
+		thickSlabReslice->SetInterpolationModeToNearestNeighbor();
+		int *dims = vtkImageData::SafeDownCast(thickSlabReslice->GetInput())->GetDimensions();
+		std::cout <<"Dimensoes da imagem sendo usada no reslice = "<< dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
 	}
 	else{//é pra usar a hi res
 		thickSlabReslice = vtkImageSlabReslice::SafeDownCast(this->ResliceHiRes);
+		thickSlabReslice->SetInterpolationModeToCubic();
+		int *dims = vtkImageData::SafeDownCast(thickSlabReslice->GetInput())->GetDimensions();
+		std::cout << "Dimensoes da imagem sendo usada no reslice = " << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
 	}
 	// Set the default color the minimum scalar value
 	double range[2];
@@ -58,8 +64,6 @@ void myResliceCursorThickLineRepresentation::SetResliceParameters( double output
 	this->ColorMap->SetInputConnection(thickSlabReslice->GetOutputPort());
 
 	int *dims = vtkImageData::SafeDownCast(thickSlabReslice->GetInput())->GetDimensions();
-
-	thickSlabReslice->SetInterpolationModeToCubic();
 	thickSlabReslice->TransformInputSamplingOff();
 	thickSlabReslice->SetResliceAxes(this->ResliceAxes);
 	thickSlabReslice->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
