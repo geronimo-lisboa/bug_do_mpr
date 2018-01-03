@@ -2,14 +2,20 @@
 #ifndef myResliceCursorWidget_h
 #define myResliceCursorWidget_h
 
+#include "myQualityControllable.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
 #include "vtkAbstractWidget.h"
+#include <vector>
 
 class myResliceCursorRepresentation;
 
-class VTKINTERACTIONWIDGETS_EXPORT myResliceCursorWidget : public vtkAbstractWidget
+class VTKINTERACTIONWIDGETS_EXPORT myResliceCursorWidget : public vtkAbstractWidget, public myQualityControllable
 {
 public:
+
+	virtual void UseLowQuality() override;
+	virtual void UseHiQuality() override;
+
 	bool EnableReslicing;
 	bool EnableWindow;
   // Description:
@@ -65,6 +71,7 @@ public:
   // Reset the cursor back to its initial state
   virtual void ResetResliceCursor();
 
+  void AddQualityControlable(myQualityControllable* q);
 protected:
 	myResliceCursorWidget();
 	~myResliceCursorWidget();
@@ -98,7 +105,7 @@ protected:
   // Keep track whether key modifier key is pressed
   int ModifierActive;
   int ManageWindowLevel;
-
+  std::vector<myQualityControllable*> qualityControllables;
 private:
 	myResliceCursorWidget(const myResliceCursorWidget&);  //Not implemented
 	void operator=(const myResliceCursorWidget&);  //Not implemented

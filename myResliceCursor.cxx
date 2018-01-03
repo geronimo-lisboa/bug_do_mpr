@@ -30,7 +30,7 @@
 vtkStandardNewMacro(myResliceCursor);
 //----------------------------------------------------------------------------
 void myResliceCursor::SetImages(vtkImageData *hiRes, vtkImageData *lowRes){
-	std::cout << __FUNCTION__ << std::endl;
+
 	this->ImageHiRes = hiRes;
 	this->ImageLowRes = lowRes;
 }

@@ -306,7 +306,6 @@ void myResliceCursorPolyDataAlgorithm
   this->ResliceCursor->GetPlane(this->ReslicePlaneNormal)->GetNormal(normal);
   this->ExtrusionFilter1->SetVector(normal);
   this->ExtrusionFilter2->SetVector(-normal[0], -normal[1], -normal[2]);
-  //std::cout << normal[0] << " " << normal[1] << " " << normal[2] << std::endl;
 
   this->ExtrusionFilter2->Update();
 

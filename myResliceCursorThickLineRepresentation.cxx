@@ -36,7 +36,6 @@ void myResliceCursorThickLineRepresentation::CreateDefaultResliceAlgorithm()
 	this->ResliceLowRes->Delete();
   }
   // Override superclass implementation to create a vtkImageSlabReslice here.
-  std::cout << __FILE__ << " - " << __FUNCTION__ << " - Override superclass implementation to create a vtkImageSlabReslice here. É onde instancio o vtkImageSlabReslice" << std::endl;
   this->ResliceHiRes = vtkImageSlabReslice::New(); //Instancia os dois filtros, o de hires e o de lowres
   this->ResliceLowRes = vtkImageSlabReslice::New();
 }
@@ -44,8 +43,6 @@ void myResliceCursorThickLineRepresentation::CreateDefaultResliceAlgorithm()
 //----------------------------------------------------------------------------
 void myResliceCursorThickLineRepresentation::SetResliceParameters( double outputSpacingX, double outputSpacingY, int extentX, int extentY )
 {
-	std::cout << __FUNCTION__ << std::endl;
-	std::cout << "   UseLowRes? = " << (UseLowRes?"sim":"nao") << std::endl;
 	vtkImageSlabReslice *thickSlabReslice = nullptr;
 	if (UseLowRes){//É para usar a low res
 		thickSlabReslice = vtkImageSlabReslice::SafeDownCast(this->ResliceLowRes);
@@ -61,7 +58,7 @@ void myResliceCursorThickLineRepresentation::SetResliceParameters( double output
 	this->ColorMap->SetInputConnection(thickSlabReslice->GetOutputPort());
 
 	int *dims = vtkImageData::SafeDownCast(thickSlabReslice->GetInput())->GetDimensions();
-	std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
+
 	thickSlabReslice->SetInterpolationModeToCubic();
 	thickSlabReslice->TransformInputSamplingOff();
 	thickSlabReslice->SetResliceAxes(this->ResliceAxes);
@@ -88,7 +85,7 @@ void myResliceCursorThickLineRepresentation::SetResliceParameters( double output
 	//	// Set the usual parameters.
 	//	this->ColorMap->SetInputConnection(thickResliceHiRes->GetOutputPort());
 	//	int *dims = vtkImageData::SafeDownCast(thickResliceHiRes->GetInput())->GetDimensions();
-	//	std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
+	//	std::co ut << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
 	//	thickResliceHiRes->TransformInputSamplingOff();
 	//	thickResliceHiRes->SetResliceAxes(this->ResliceAxes);
 	//	thickResliceHiRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
@@ -112,7 +109,7 @@ void myResliceCursorThickLineRepresentation::SetResliceParameters( double output
 	//	// Set the usual parameters.
 	//	this->ColorMap->SetInputConnection(thickResliceLowRes->GetOutputPort());
 	//	int *dims = vtkImageData::SafeDownCast(thickResliceLowRes->GetInput())->GetDimensions();
-	//	std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
+	//	std::c out << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
 	//	thickResliceLowRes->TransformInputSamplingOff();
 	//	thickResliceLowRes->SetResliceAxes(this->ResliceAxes);
 	//	thickResliceLowRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);

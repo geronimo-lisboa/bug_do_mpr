@@ -432,7 +432,7 @@ myResliceCursor * myResliceImageViewer::GetResliceCursor()
 //----------------------------------------------------------------------------
 void myResliceImageViewer::SetInputData(vtkImageData *imgHiRes, vtkImageData *imgLowRes)
 {
-	std::cout << __FUNCTION__ << std::endl;
+
 	vtkImageData *in = imgHiRes;
 	this->WindowLevel->SetInputData(in);
 	this->GetResliceCursor()->SetImages(imgHiRes, imgLowRes);
@@ -612,4 +612,9 @@ void myResliceImageViewer::PrintSelf(ostream& os, vtkIndent indent)
     {
     this->Interactor->PrintSelf(os,indent.GetNextIndent());
     }
+}
+
+void myResliceImageViewer::LinkWithOtherWidgets(myQualityControllable *q1, myQualityControllable *q2){
+	ResliceCursorWidget->AddQualityControlable(q1);
+	ResliceCursorWidget->AddQualityControlable(q2);
 }

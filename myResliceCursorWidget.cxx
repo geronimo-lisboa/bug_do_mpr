@@ -158,13 +158,27 @@ void myResliceCursorWidget::EndResizeThicknessAction(vtkAbstractWidget *)
 {
 }
 
+void myResliceCursorWidget::UseLowQuality(){
+	myResliceCursorRepresentation *rep = reinterpret_cast<myResliceCursorRepresentation*>(this->WidgetRep);
+	rep->SetUseLowRes(true);
+}
+
+void myResliceCursorWidget::UseHiQuality(){
+	myResliceCursorRepresentation *rep = reinterpret_cast<myResliceCursorRepresentation*>(this->WidgetRep);
+	rep->SetUseLowRes(false);
+	this->Render();
+}
+
+
+void myResliceCursorWidget::AddQualityControlable(myQualityControllable* q){
+	qualityControllables.push_back(q);
+}
+
 //-------------------------------------------------------------------------
 void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 {
-	std::cout << __FUNCTION__ << std::endl;
 	myResliceCursorWidget *self = reinterpret_cast<myResliceCursorWidget*>(w);
-	myResliceCursorRepresentation *rep =
-		reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
+	myResliceCursorRepresentation *rep = reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
 
 	int X = self->Interactor->GetEventPosition()[0];
 	int Y = self->Interactor->GetEventPosition()[1];
@@ -172,19 +186,15 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 	self->ModifierActive = vtkEvent::GetModifier(self->Interactor);
 	rep->ComputeInteractionState(X, Y, self->ModifierActive);
 	int interactionState = rep->GetInteractionState();
-	std::cout << "---interaction state = " << interactionState << std::endl;
 	if (self->WidgetRep->GetInteractionState() == myResliceCursorRepresentation::Outside)
 	{
 		if (self->GetManageWindowLevel() && rep->GetShowReslicedImage())
 		{
 			self->StartWindowLevel();
-			std::cout << "StartWindowLevel" << std::endl;
 		}
 		else
 		{
 			rep->SetManipulationMode(myResliceCursorRepresentation::None);
-			std::cout << "myResliceCursorRepresentation::None" << std::endl;
-
 			return;
 		}
 	}
@@ -194,8 +204,10 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 	}
 	if (interactionState == 5 || interactionState == 6)//OS DOIS EIXOS
 	{
-		std::cout << "[" << __FUNCTION__ << ", ln:" << __LINE__ << "] Comecei o reslice, a troca de qualidade ocorreria aqui" << std::endl;
-		rep->SetUseLowRes(true);
+		rep->SetUseLowRes(true);//Reduz a minha qualidade
+		for (myQualityControllable *q : self->qualityControllables){//reduz as dos outros
+			q->UseLowQuality();
+		}
 		rep->ComputeInteractionState(X, Y, 2);
 		rep->SetManipulationMode(myResliceCursorLineRepresentation::RotateBothAxes);
 	}
@@ -203,12 +215,11 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 	// else
 	// {
 	//   rep->SetManipulationMode(myResliceCursorRepresentation::PanAndRotate);
-	//std::cout << "myResliceCursorRepresentation::PanAndRotate" << std::endl;
+
 	// }
 
 	if (rep->GetManipulationMode() == myResliceCursorRepresentation::None)
 	{
-		std::cout << "trap" << std::endl;
 		return;
 	}
 
@@ -244,7 +255,6 @@ void myResliceCursorWidget::RotateAction(vtkAbstractWidget *w)
 	int Y = self->Interactor->GetEventPosition()[1];
 
 	self->ModifierActive = vtkEvent::GetModifier(self->Interactor);//AQUI É 2 C/ O Ctrl pressionado. E sem?
-	std::cout << __FUNCTION__ << " " << self->ModifierActive << std::endl;
 	rep->ComputeInteractionState(X, Y, self->ModifierActive);
 
 	if (self->WidgetRep->GetInteractionState()
@@ -322,10 +332,15 @@ void myResliceCursorWidget::MoveAction(vtkAbstractWidget *w)
 //-------------------------------------------------------------------------
 void myResliceCursorWidget::EndSelectAction(vtkAbstractWidget *w)
 {
-	std::cout<<"["<<__FUNCTION__<<", ln:"<<__LINE__<<"] Terminei o reslice, a troca de qualidade ocorreria aqui" << std::endl;
 	myResliceCursorWidget *self = static_cast<myResliceCursorWidget*>(w);
 	myResliceCursorRepresentation *rep = reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
-	rep->SetUseLowRes(false);
+
+	rep->SetUseLowRes(false);//Aumenta minha qualidade
+	for (myQualityControllable *q : self->qualityControllables){//Aumenta as dos outros
+		q->UseHiQuality();
+	}
+
+
 	if (self->WidgetState != myResliceCursorWidget::Active)
 	{
 		return;

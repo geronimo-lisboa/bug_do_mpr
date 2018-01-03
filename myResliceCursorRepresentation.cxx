@@ -580,49 +580,50 @@ void myResliceCursorRepresentation::ComputeOrigin(vtkMatrix4x4 *m)
 //----------------------------------------------------------------------------
 void myResliceCursorRepresentation::SetResliceParameters( double outputSpacingX, double outputSpacingY, int extentX, int extentY )
 {
-  //vtkImageReslice *reslice = vtkImageReslice::SafeDownCast(this->Reslice);
-  vtkImageReslice *resliceHiRes = vtkImageReslice::SafeDownCast(this->ResliceLowRes);
-  if (resliceHiRes)
-    {
-    // Set the default color the minimum scalar value
-    double range[2];
-	vtkImageData::SafeDownCast(resliceHiRes->GetInput())->
-      GetScalarRange( range );
-	resliceHiRes->SetBackgroundLevel(range[0]);
-	//É aqui que eu ligo o color map ao resultado do reslice
-	this->ColorMap->SetInputConnection(resliceHiRes->GetOutputPort());
+	assert(false);
+ // //vtkImageReslice *reslice = vtkImageReslice::SafeDownCast(this->Reslice);
+ // vtkImageReslice *resliceHiRes = vtkImageReslice::SafeDownCast(this->ResliceLowRes);
+ // if (resliceHiRes)
+ //   {
+ //   // Set the default color the minimum scalar value
+ //   double range[2];
+	//vtkImageData::SafeDownCast(resliceHiRes->GetInput())->
+ //     GetScalarRange( range );
+	//resliceHiRes->SetBackgroundLevel(range[0]);
+	////É aqui que eu ligo o color map ao resultado do reslice
+	//this->ColorMap->SetInputConnection(resliceHiRes->GetOutputPort());
 
-	int *dims = vtkImageData::SafeDownCast(resliceHiRes->GetInput())->GetDimensions();
-	std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
+	//int *dims = vtkImageData::SafeDownCast(resliceHiRes->GetInput())->GetDimensions();
+	//std::co ut << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
 
-	resliceHiRes->TransformInputSamplingOff();
-	resliceHiRes->AutoCropOutputOn();
-	resliceHiRes->SetResliceAxes(this->ResliceAxes);
-	resliceHiRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
-	resliceHiRes->SetOutputOrigin(0.5*outputSpacingX, 0.5*outputSpacingY, 0);
-	resliceHiRes->SetOutputExtent(0, extentX - 1, 0, extentY - 1, 0, 0);
-    }
-  vtkImageReslice *resliceLowRes = vtkImageReslice::SafeDownCast(this->ResliceLowRes);
-  if (resliceLowRes)
-  {
-	  // Set the default color the minimum scalar value
-	  double range[2];
-	  vtkImageData::SafeDownCast(resliceLowRes->GetInput())->GetScalarRange(range);
-	  resliceLowRes->SetBackgroundLevel(range[0]);
-	  //É aqui que eu ligo o color map
-	  this->ColorMap->SetInputConnection(resliceLowRes->GetOutputPort());
+	//resliceHiRes->TransformInputSamplingOff();
+	//resliceHiRes->AutoCropOutputOn();
+	//resliceHiRes->SetResliceAxes(this->ResliceAxes);
+	//resliceHiRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
+	//resliceHiRes->SetOutputOrigin(0.5*outputSpacingX, 0.5*outputSpacingY, 0);
+	//resliceHiRes->SetOutputExtent(0, extentX - 1, 0, extentY - 1, 0, 0);
+ //   }
+ // vtkImageReslice *resliceLowRes = vtkImageReslice::SafeDownCast(this->ResliceLowRes);
+ // if (resliceLowRes)
+ // {
+	//  // Set the default color the minimum scalar value
+	//  double range[2];
+	//  vtkImageData::SafeDownCast(resliceLowRes->GetInput())->GetScalarRange(range);
+	//  resliceLowRes->SetBackgroundLevel(range[0]);
+	//  //É aqui que eu ligo o color map
+	//  this->ColorMap->SetInputConnection(resliceLowRes->GetOutputPort());
 
-	  int *dims = vtkImageData::SafeDownCast(resliceLowRes->GetInput())->GetDimensions();
-	  std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
+	//  int *dims = vtkImageData::SafeDownCast(resliceLowRes->GetInput())->GetDimensions();
+	//  std::co ut << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
 
 
-	  resliceLowRes->TransformInputSamplingOff();
-	  resliceLowRes->AutoCropOutputOn();
-	  resliceLowRes->SetResliceAxes(this->ResliceAxes);
-	  resliceLowRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
-	  resliceLowRes->SetOutputOrigin(0.5*outputSpacingX, 0.5*outputSpacingY, 0);
-	  resliceLowRes->SetOutputExtent(0, extentX - 1, 0, extentY - 1, 0, 0);
-  }
+	//  resliceLowRes->TransformInputSamplingOff();
+	//  resliceLowRes->AutoCropOutputOn();
+	//  resliceLowRes->SetResliceAxes(this->ResliceAxes);
+	//  resliceLowRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
+	//  resliceLowRes->SetOutputOrigin(0.5*outputSpacingX, 0.5*outputSpacingY, 0);
+	//  resliceLowRes->SetOutputExtent(0, extentX - 1, 0, extentY - 1, 0, 0);
+ // }
 }
 
 //----------------------------------------------------------------------------

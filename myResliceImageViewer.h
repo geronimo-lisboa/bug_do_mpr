@@ -6,6 +6,7 @@
 
 #include "vtkInteractionImageModule.h" // For export macro
 #include "vtkImageViewer2.h"
+#include "myQualityControllable.h"
 
 class myResliceCursorWidget;
 class myResliceCursor;
@@ -112,6 +113,7 @@ public:
   // Description:
   enum { SliceChangedEvent = 1001 };
 
+  void LinkWithOtherWidgets(myQualityControllable *q1, myQualityControllable *q2);
 protected:
 	myResliceImageViewer();
 	~myResliceImageViewer();
@@ -134,6 +136,7 @@ protected:
   myResliceImageViewerMeasurements * Measurements;
   int                                 SliceScrollOnMouseWheel;
   myResliceImageViewerScrollCallback * ScrollCallback;
+
 
 private:
 	myResliceImageViewer(const myResliceImageViewer&);  // Not implemented.

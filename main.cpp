@@ -132,9 +132,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
 	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
 	BOOST_ASSERT((thickSlabReslice != nullptr));//sanity check do cast
-	cout << thickSlabReslice->GetInterpolationModeAsString() << endl;
-	thickSlabReslice->SetInterpolationModeToCubic();
-	cout << thickSlabReslice->GetInterpolationModeAsString() << endl;
+
 	thickSlabReslice->SetSlabModeToMax();//Seta pra mip
 
 	thickSlabReslice->SetSlabNumberOfSlices(10);
@@ -175,18 +173,23 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	mprs[1] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 1);
 	mprs[2] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 2);
 	resliceCursorCallback = vtkSmartPointer<myResliceCursorCallback>::New();
-
+	//Liga os callbacks
 	for (std::shared_ptr<MPRView> m : mprs){
-		m->SetCallbacks(mprs[0]->GetmyResliceImageViewer()->GetResliceCursor(),
-					    resliceCursorCallback);
+		m->SetCallbacks(mprs[0]->GetmyResliceImageViewer()->GetResliceCursor(),resliceCursorCallback);
 		resliceCursorCallback->AddMPR(m);
-
 	}
+	//Liga os controles de qualidade
+	myQualityControllable *c0 = mprs[0]->GetmyResliceImageViewer()->GetResliceCursorWidget(); //ele tb é do do tipo myQualityControllable
+	myQualityControllable *c1 = mprs[1]->GetmyResliceImageViewer()->GetResliceCursorWidget(); //ele tb é do do tipo myQualityControllable
+	myQualityControllable *c2 = mprs[2]->GetmyResliceImageViewer()->GetResliceCursorWidget(); //ele tb é do do tipo myQualityControllable
+	mprs[0]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c1, c2);
+	mprs[1]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c2);
+	mprs[2]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c1);
 }
 
 void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
 	AbortFlagOn();
-	cout << __FUNCTION__ << " - event = " << ev << endl;
+
 
 	vtkInteractorStyleImage *i = vtkInteractorStyleImage::SafeDownCast(caller);
 	if (i){//Se isso é verdadeiro é pq é operação de Window/Level
