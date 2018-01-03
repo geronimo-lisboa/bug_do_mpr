@@ -44,6 +44,7 @@ void myResliceCursorThickLineRepresentation::CreateDefaultResliceAlgorithm()
 void myResliceCursorThickLineRepresentation::SetResliceParameters( double outputSpacingX, double outputSpacingY, int extentX, int extentY )
 {
 	std::cout << __FUNCTION__ << std::endl;
+	std::cout << "   UseLowRes? = " << (UseLowRes?"sim":"nao") << std::endl;
 	vtkImageSlabReslice *thickResliceHiRes = vtkImageSlabReslice::SafeDownCast(this->ResliceHiRes);
 	if (thickResliceHiRes){
 		// Set the default color the minimum scalar value

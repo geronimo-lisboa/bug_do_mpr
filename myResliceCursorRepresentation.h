@@ -130,6 +130,8 @@ public:
   void SetTextProperty(vtkTextProperty* tprop);
   vtkTextProperty* GetTextProperty();
 
+  vtkSetMacro(UseLowRes, bool);
+  vtkGetMacro(UseLowRes, bool);
   // Description:
   // Render as a 2D image, or render as a plane with a texture in physical
   // space.
@@ -213,7 +215,7 @@ protected:
 
   // Format for printing the distance
   char *ThicknessLabelFormat;
-
+  bool						UseLowRes;
   vtkImageAlgorithm       * ResliceHiRes;
   vtkImageAlgorithm       * ResliceLowRes;
   vtkPlaneSource          * PlaneSource;

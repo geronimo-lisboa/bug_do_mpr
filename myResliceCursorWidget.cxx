@@ -195,6 +195,7 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 	if (interactionState == 5 || interactionState == 6)//OS DOIS EIXOS
 	{
 		std::cout << "[" << __FUNCTION__ << ", ln:" << __LINE__ << "] Comecei o reslice, a troca de qualidade ocorreria aqui" << std::endl;
+		rep->SetUseLowRes(true);
 		rep->ComputeInteractionState(X, Y, 2);
 		rep->SetManipulationMode(myResliceCursorLineRepresentation::RotateBothAxes);
 	}
@@ -324,7 +325,7 @@ void myResliceCursorWidget::EndSelectAction(vtkAbstractWidget *w)
 	std::cout<<"["<<__FUNCTION__<<", ln:"<<__LINE__<<"] Terminei o reslice, a troca de qualidade ocorreria aqui" << std::endl;
 	myResliceCursorWidget *self = static_cast<myResliceCursorWidget*>(w);
 	myResliceCursorRepresentation *rep = reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
-
+	rep->SetUseLowRes(false);
 	if (self->WidgetState != myResliceCursorWidget::Active)
 	{
 		return;
