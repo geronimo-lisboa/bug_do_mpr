@@ -290,10 +290,10 @@ void myResliceCursorPolyDataAlgorithm
   this->ClipWithBox->SetClipFunction(this->Box);
   this->ClipWithBox->GenerateClipScalarsOff();
   this->ClipWithBox->GenerateClippedOutputOff();
-  this->Box->SetBounds(this->ResliceCursor->GetImage()->GetBounds());
+  this->Box->SetBounds(this->ResliceCursor->GetImageHiRes()->GetBounds());
 
   double s[3];
-  this->ResliceCursor->GetImage()->GetSpacing(s);
+  this->ResliceCursor->GetImageHiRes()->GetSpacing(s);
   const double smax = std::max(std::max(s[0], s[1]), s[2]);
   this->ExtrusionFilter1->SetScaleFactor(smax);
   this->ExtrusionFilter2->SetScaleFactor(smax);

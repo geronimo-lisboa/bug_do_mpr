@@ -28,8 +28,12 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(myResliceCursor);
-vtkCxxSetObjectMacro(myResliceCursor, Image, vtkImageData);
-
+//----------------------------------------------------------------------------
+void myResliceCursor::SetImages(vtkImageData *hiRes, vtkImageData *lowRes){
+	std::cout << __FUNCTION__ << std::endl;
+	this->ImageHiRes = hiRes;
+	this->ImageLowRes = lowRes;
+}
 //----------------------------------------------------------------------------
 myResliceCursor::myResliceCursor()
 {
@@ -59,7 +63,8 @@ myResliceCursor::myResliceCursor()
 
   this->ThickMode               = 1;
 
-  this->Image                   = NULL;
+  this->ImageHiRes                   = NULL;
+  this->ImageLowRes	= NULL;
 
   this->PolyData                = vtkPolyData::New();
   vtkSmartPointer< vtkPoints > points
@@ -103,14 +108,12 @@ myResliceCursor::myResliceCursor()
 //----------------------------------------------------------------------------
 myResliceCursor::~myResliceCursor()
 {
-  this->SetImage(NULL);
+  this->SetImages(nullptr, nullptr);
   this->PolyData->Delete();
   this->ReslicePlanes->Delete();
-
-  for (int i = 0; i < 3; i++)
-    {
+	for (int i = 0; i < 3; i++){
     this->CenterlineAxis[i]->Delete();
-    }
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -180,21 +183,18 @@ void myResliceCursor::Reset()
   this->ZAxis[1]                = 0.0;
   this->ZAxis[2]                = 1.0;
 
-  if (this->GetImage())
-    {
-    this->GetImage()->GetCenter(this->Center);
-    }
-  else
-    {
+  if (this->GetImageHiRes()){//Pega o centro da versão de alta resolução
+    this->GetImageHiRes()->GetCenter(this->Center);
+  }
+  else{
     this->Center[0]               = 0.0;
     this->Center[1]               = 0.0;
     this->Center[2]               = 0.0;
-    }
+  }
 
-  for (int i = 0; i < 3; i++)
-    {
+  for (int i = 0; i < 3; i++){
     this->GetPlane(i)->SetOrigin(this->Center);
-    }
+ }
 
   this->ReslicePlanes->GetItem(0)->SetNormal(1,0,0);
   this->ReslicePlanes->GetItem(1)->SetNormal(0,-1,0);
@@ -222,17 +222,14 @@ vtkPolyData * myResliceCursor::GetPolyData()
 //----------------------------------------------------------------------------
 void myResliceCursor::Update()
 {
-  if (!this->Image)
-    {
-    vtkErrorMacro( << "Image not set !" );
+  if (!this->ImageHiRes || !this->ImageLowRes){
+    vtkErrorMacro( << "Não setou as imagens de alta resolução e de baixa resolução" );
     return;
-    }
-
-  if (this->GetMTime() > this->PolyDataBuildTime)
-    {
+  }
+  if (this->GetMTime() > this->PolyDataBuildTime){
     this->BuildCursorTopology();
     this->BuildCursorGeometry();
-    }
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -257,7 +254,7 @@ void myResliceCursor::BuildCursorGeometryWithHole()
   this->ComputeAxes();
 
   double bounds[6];
-  this->Image->GetBounds(bounds);
+  this->ImageHiRes->GetBounds(bounds);//Pega os tamanhos da imagem de alta resolução
 
   // Length of the principal diagonal.
   const double pdLength = 20 * 0.5 * sqrt(
@@ -310,7 +307,7 @@ void myResliceCursor::BuildCursorGeometryWithoutHole()
   this->ComputeAxes();
 
   double bounds[6];
-  this->Image->GetBounds(bounds);
+  this->ImageHiRes->GetBounds(bounds); //Pega os tamanhos da imagem de alta resolução
 
   // Length of the principal diagonal.
   const double pdLength = 20 * 0.5 * sqrt(
@@ -362,7 +359,7 @@ void myResliceCursor::BuildPolyData()
   this->ComputeAxes();
 
   double bounds[6];
-  this->Image->GetBounds(bounds);
+  this->ImageHiRes->GetBounds(bounds); //Pega os tamanhos da imagem de alta resolução
 
   // Length of the principal diagonal.
   const double pdLength = 20 * 0.5 * sqrt(
@@ -478,10 +475,10 @@ void myResliceCursor::SetCenter(double _arg1, double _arg2, double _arg3)
 
     // Ensure that the center of the cursor lies within the image bounds.
 
-    if (this->Image)
+    if (this->ImageHiRes)
       {
       double bounds[6];
-      this->Image->GetBounds(bounds);
+      this->ImageHiRes->GetBounds(bounds);
       if (_arg1 < bounds[0] || _arg1 > bounds[1] ||
           _arg2 < bounds[2] || _arg2 > bounds[3] ||
           _arg3 < bounds[4] || _arg3 > bounds[5])
@@ -584,10 +581,10 @@ void myResliceCursor::PrintSelf(ostream& os, vtkIndent indent)
      << this->ZAxis[2] << endl;
   os << indent << "Center: (" << this->Center[0] << "," << this->Center[1]
      << this->Center[2] << endl;
-  os << indent << "Image: " << this->Image << "\n";
-  if (this->Image)
+  os << indent << "Image Hi Res: " << this->ImageHiRes << "\n";
+  if (this->ImageHiRes)
     {
-    this->Image->PrintSelf(os, indent);
+    this->ImageHiRes->PrintSelf(os, indent);
     }
   os << indent << "PolyData: " << this->PolyData << "\n";
   if (this->PolyData)

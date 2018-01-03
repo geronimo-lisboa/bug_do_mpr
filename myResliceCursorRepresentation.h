@@ -82,7 +82,8 @@ public:
   // Description:
   // Get the current reslice class and reslice axes
   vtkGetObjectMacro( ResliceAxes, vtkMatrix4x4 );
-  vtkGetObjectMacro( Reslice, vtkImageAlgorithm );
+  vtkGetObjectMacro( ResliceHiRes, vtkImageAlgorithm );
+  vtkGetObjectMacro( ResliceLowRes, vtkImageAlgorithm);
 
   // Description:
   // Get the displayed image actor
@@ -213,7 +214,8 @@ protected:
   // Format for printing the distance
   char *ThicknessLabelFormat;
 
-  vtkImageAlgorithm       * Reslice;
+  vtkImageAlgorithm       * ResliceHiRes;
+  vtkImageAlgorithm       * ResliceLowRes;
   vtkPlaneSource          * PlaneSource;
   int                       RestrictPlaneToVolume;
   int                       ShowReslicedImage;

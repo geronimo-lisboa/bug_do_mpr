@@ -300,10 +300,10 @@ void myResliceImageViewer::InstallPipeline()
     vtkCamera *cam = this->Renderer->GetActiveCamera();
     double onespacing[3] = {1, 1, 1};
     double *spacing = onespacing;
-    if (this->GetResliceCursor()->GetImage())
+	if (this->GetResliceCursor()->GetImageHiRes())
       {
-      this->GetResliceCursor()->GetImage()->GetBounds(bounds);
-      spacing = this->GetResliceCursor()->GetImage()->GetSpacing();
+		  this->GetResliceCursor()->GetImageHiRes()->GetBounds(bounds);
+		  spacing = this->GetResliceCursor()->GetImageHiRes()->GetSpacing();
       }
     double avg_spacing =
       (spacing[0] + spacing[1] + spacing[2]) / 3.0;
@@ -432,31 +432,27 @@ myResliceCursor * myResliceImageViewer::GetResliceCursor()
 //----------------------------------------------------------------------------
 void myResliceImageViewer::SetInputData(vtkImageData *imgHiRes, vtkImageData *imgLowRes)
 {
+	std::cout << __FUNCTION__ << std::endl;
 	vtkImageData *in = imgHiRes;
-  if(!in)
-    {
-    return;
-    }
-
-  this->WindowLevel->SetInputData(in);
-  this->GetResliceCursor()->SetImage(in);
-  this->GetResliceCursor()->SetCenter(in->GetCenter());
-  this->UpdateDisplayExtent();
-
-  double range[2];
-  in->GetScalarRange(range);
-  if (myResliceCursorRepresentation *rep =
-        myResliceCursorRepresentation::SafeDownCast(
-          this->ResliceCursorWidget->GetRepresentation()))
-    {
-    if (vtkImageReslice *reslice =
-        vtkImageReslice::SafeDownCast(rep->GetReslice()))
-      {
-      // default background color is the min value of the image scalar range
-      reslice->SetBackgroundColor(range[0],range[0],range[0],range[0]);
-      this->SetColorWindow(range[1]-range[0]);
-      this->SetColorLevel((range[0]+range[1])/2.0);
-      }
+	this->WindowLevel->SetInputData(in);
+	this->GetResliceCursor()->SetImages(imgHiRes, imgLowRes);
+	this->GetResliceCursor()->SetCenter(in->GetCenter());
+	this->UpdateDisplayExtent();
+	double range[2];
+	in->GetScalarRange(range);
+	if (myResliceCursorRepresentation *rep = myResliceCursorRepresentation::SafeDownCast(this->ResliceCursorWidget->GetRepresentation()))
+	{
+		// default background color is the min value of the image scalar range
+		if (vtkImageReslice *reslice = vtkImageReslice::SafeDownCast(rep->GetResliceHiRes())){
+			reslice->SetBackgroundColor(range[0],range[0],range[0],range[0]);
+			this->SetColorWindow(range[1]-range[0]);
+			this->SetColorLevel((range[0]+range[1])/2.0);
+		}
+		if (vtkImageReslice *reslice = vtkImageReslice::SafeDownCast(rep->GetResliceLowRes())){
+			reslice->SetBackgroundColor(range[0], range[0], range[0], range[0]);
+			this->SetColorWindow(range[1] - range[0]);
+			this->SetColorLevel((range[0] + range[1]) / 2.0);
+		}
     }
 }
 
@@ -545,7 +541,7 @@ double myResliceImageViewer::GetInterSliceSpacingInResliceMode()
   if (vtkPlane *plane = this->GetReslicePlane())
     {
     plane->GetNormal(n);
-    this->GetResliceCursor()->GetImage()->GetSpacing(imageSpacing);
+	this->GetResliceCursor()->GetImageHiRes()->GetSpacing(imageSpacing);
     resliceSpacing = fabs(vtkMath::Dot(n, imageSpacing));
     }
 
@@ -581,7 +577,7 @@ void myResliceImageViewer::IncrementSlice( int inc )
       c[2] += n[2];
 
       // If the new center is inside, put it there...
-      if (vtkImageData *image = this->GetResliceCursor()->GetImage())
+	  if (vtkImageData *image = this->GetResliceCursor()->GetImageHiRes())
         {
         image->GetBounds(bounds);
         if (c[0] >= bounds[0] && c[0] <= bounds[1] &&

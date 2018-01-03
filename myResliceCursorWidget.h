@@ -25,14 +25,15 @@ public:
   // Specify an instance of vtkWidgetRepresentation used to represent this
   // widget in the scene. Note that the representation is a subclass of vtkProp
   // so it can be added to the renderer independent of the widget.
-  void SetRepresentation(myResliceCursorRepresentation *r)
-    {this->Superclass::SetWidgetRepresentation(
-        reinterpret_cast<vtkWidgetRepresentation*>(r));}
+  void SetRepresentation(myResliceCursorRepresentation *r){
+	  this->Superclass::SetWidgetRepresentation(reinterpret_cast<vtkWidgetRepresentation*>(r));
+  }
 
   // Description:
   // Return the representation as a myResliceCursorRepresentation.
-  myResliceCursorRepresentation *GetResliceCursorRepresentation()
-    {return reinterpret_cast<myResliceCursorRepresentation*>(this->WidgetRep);}
+  myResliceCursorRepresentation *GetResliceCursorRepresentation(){
+	  return reinterpret_cast<myResliceCursorRepresentation*>(this->WidgetRep);
+  }
 
   // Description:
   // Create the default widget representation if one is not set.

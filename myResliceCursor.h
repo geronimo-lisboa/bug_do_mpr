@@ -19,10 +19,16 @@ public:
   // Description:
 	static myResliceCursor *New();
 
-  // Description:
-  // Set the image (3D) that we are slicing
-  virtual void SetImage(vtkImageData * );
-  vtkGetObjectMacro( Image, vtkImageData );
+	void SetImages(vtkImageData *hiRes, vtkImageData *lowRes);
+	vtkGetObjectMacro(ImageHiRes, vtkImageData);
+	vtkGetObjectMacro(ImageLowRes, vtkImageData);
+
+
+	//// Description:
+ // // Set the image (3D) that we are slicing
+ // virtual void SetImage(vtkImageData * );
+ // vtkGetObjectMacro( Image, vtkImageData );
+
 
   // Description:
   // Set/Get the cente of the reslice cursor.
@@ -122,7 +128,8 @@ protected:
   double        XAxis[3];
   double        YAxis[3];
   double        ZAxis[3];
-  vtkImageData *Image;
+  vtkImageData *ImageHiRes;
+  vtkImageData *ImageLowRes;
   vtkPolyData  *PolyData;
 
   vtkPolyData  *CenterlineAxis[3];

@@ -78,7 +78,9 @@ myResliceCursorRepresentation::myResliceCursorRepresentation()
   this->ThicknessTextActor->SetMapper(this->ThicknessTextMapper);
   this->ThicknessTextActor->VisibilityOff();
 
-  this->Reslice = NULL;
+  this->ResliceHiRes = NULL;
+  this->ResliceLowRes = NULL;
+
   this->CreateDefaultResliceAlgorithm();
   this->PlaneSource = vtkPlaneSource::New();
 
@@ -137,10 +139,13 @@ myResliceCursorRepresentation::~myResliceCursorRepresentation()
   this->ThicknessTextActor->Delete();
   this->SetThicknessLabelFormat(0);
   this->ImageActor->Delete();
-  if (this->Reslice)
-    {
-    this->Reslice->Delete();
-    }
+  if (this->ResliceHiRes){
+    this->ResliceHiRes->Delete();
+  }
+  if (this->ResliceLowRes){
+	  this->ResliceLowRes->Delete();
+  }
+
   this->PlaneSource->Delete();
   this->ResliceAxes->Delete();
   this->NewResliceAxes->Delete();
@@ -222,13 +227,14 @@ void myResliceCursorRepresentation::SetManipulationMode( int m )
 //----------------------------------------------------------------------
 void myResliceCursorRepresentation::BuildRepresentation()
 {
-  this->Reslice->SetInputData(this->GetResliceCursor()->GetImage());
+  this->ResliceHiRes->SetInputData(this->GetResliceCursor()->GetImageHiRes());
+  this->ResliceLowRes->SetInputData(this->GetResliceCursor()->GetImageLowRes());
 
   this->TexturePlaneActor->SetVisibility(
-      this->GetResliceCursor()->GetImage() ?
+	  this->GetResliceCursor()->GetImageHiRes() ?
         (this->ShowReslicedImage && !this->UseImageActor): 0);
   this->ImageActor->SetVisibility(
-      this->GetResliceCursor()->GetImage() ?
+	  this->GetResliceCursor()->GetImageHiRes() ?
         (this->ShowReslicedImage && this->UseImageActor) : 0);
 
   // Update the reslice plane if the plane is being manipulated
@@ -246,7 +252,7 @@ void myResliceCursorRepresentation::BuildRepresentation()
 //----------------------------------------------------------------------------
 void myResliceCursorRepresentation::InitializeReslicePlane()
 {
-  if ( !this->GetResliceCursor()->GetImage())
+	if (!this->GetResliceCursor()->GetImageHiRes())
     {
     return;
     }
@@ -342,12 +348,12 @@ void myResliceCursorRepresentation::GetVector2(double v2[3])
 void myResliceCursorRepresentation::ComputeReslicePlaneOrigin()
 {
   double bounds[6];
-  this->GetResliceCursor()->GetImage()->GetBounds(bounds);
+  this->GetResliceCursor()->GetImageHiRes()->GetBounds(bounds);
 
 
   double center[3], imageCenter[3], offset[3];
   this->GetResliceCursor()->GetCenter(center);
-  this->GetResliceCursor()->GetImage()->GetCenter(imageCenter);
+  this->GetResliceCursor()->GetImageHiRes()->GetCenter(imageCenter);
 
   // Offset based on the center of the image and how far from it the
   // reslice cursor is. This allows us to capture the whole image even
@@ -389,7 +395,7 @@ void myResliceCursorRepresentation::ComputeReslicePlaneOrigin()
 //----------------------------------------------------------------------
 void myResliceCursorRepresentation::UpdateReslicePlane()
 {
-  if ( !this->GetResliceCursor()->GetImage() ||
+	if (!this->GetResliceCursor()->GetImageHiRes() ||
        !this->TexturePlaneActor->GetVisibility() )
     {
     return;
@@ -406,11 +412,11 @@ void myResliceCursorRepresentation::UpdateReslicePlane()
   //
   // this->GetResliceCursor()->UpdateInformation();
   double spacing[3];
-  this->GetResliceCursor()->GetImage()->GetSpacing(spacing);
+  this->GetResliceCursor()->GetImageHiRes()->GetSpacing(spacing);
   double origin[3];
-  this->GetResliceCursor()->GetImage()->GetOrigin(origin);
+  this->GetResliceCursor()->GetImageHiRes()->GetOrigin(origin);
   int extent[6];
-  this->GetResliceCursor()->GetImage()->GetExtent(extent);
+  this->GetResliceCursor()->GetImageHiRes()->GetExtent(extent);
 
   for (int i = 0; i < 3; i++)
     {
@@ -576,28 +582,41 @@ void myResliceCursorRepresentation::ComputeOrigin(vtkMatrix4x4 *m)
 }
 
 //----------------------------------------------------------------------------
-void myResliceCursorRepresentation
-::SetResliceParameters( double outputSpacingX, double outputSpacingY,
-    int extentX, int extentY )
+void myResliceCursorRepresentation::SetResliceParameters( double outputSpacingX, double outputSpacingY, int extentX, int extentY )
 {
-  vtkImageReslice *reslice = vtkImageReslice::SafeDownCast(this->Reslice);
-
-  if (reslice)
+  //vtkImageReslice *reslice = vtkImageReslice::SafeDownCast(this->Reslice);
+  vtkImageReslice *resliceHiRes = vtkImageReslice::SafeDownCast(this->ResliceLowRes);
+  if (resliceHiRes)
     {
     // Set the default color the minimum scalar value
     double range[2];
-    vtkImageData::SafeDownCast(reslice->GetInput())->
+	vtkImageData::SafeDownCast(resliceHiRes->GetInput())->
       GetScalarRange( range );
-    reslice->SetBackgroundLevel(range[0]);
+	resliceHiRes->SetBackgroundLevel(range[0]);
 
-    this->ColorMap->SetInputConnection(reslice->GetOutputPort());
-    reslice->TransformInputSamplingOff();
-    reslice->AutoCropOutputOn();
-    reslice->SetResliceAxes(this->ResliceAxes);
-    reslice->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
-    reslice->SetOutputOrigin(0.5*outputSpacingX, 0.5*outputSpacingY, 0);
-    reslice->SetOutputExtent(0, extentX-1, 0, extentY-1, 0, 0);
+	this->ColorMap->SetInputConnection(resliceHiRes->GetOutputPort());
+	resliceHiRes->TransformInputSamplingOff();
+	resliceHiRes->AutoCropOutputOn();
+	resliceHiRes->SetResliceAxes(this->ResliceAxes);
+	resliceHiRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
+	resliceHiRes->SetOutputOrigin(0.5*outputSpacingX, 0.5*outputSpacingY, 0);
+	resliceHiRes->SetOutputExtent(0, extentX - 1, 0, extentY - 1, 0, 0);
     }
+  vtkImageReslice *resliceLowRes = vtkImageReslice::SafeDownCast(this->ResliceLowRes);
+  if (resliceLowRes)
+  {
+	  // Set the default color the minimum scalar value
+	  double range[2];
+	  vtkImageData::SafeDownCast(resliceLowRes->GetInput())->GetScalarRange(range);
+	  resliceLowRes->SetBackgroundLevel(range[0]);
+	  this->ColorMap->SetInputConnection(resliceLowRes->GetOutputPort());
+	  resliceLowRes->TransformInputSamplingOff();
+	  resliceLowRes->AutoCropOutputOn();
+	  resliceLowRes->SetResliceAxes(this->ResliceAxes);
+	  resliceLowRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
+	  resliceLowRes->SetOutputOrigin(0.5*outputSpacingX, 0.5*outputSpacingY, 0);
+	  resliceLowRes->SetOutputExtent(0, extentX - 1, 0, extentY - 1, 0, 0);
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -750,10 +769,14 @@ void myResliceCursorRepresentation::CreateDefaultResliceAlgorithm()
 {
   // Allows users to optionally use their own reslice filters or other
   // algorithms here.
-  if (!this->Reslice)
+  if (!this->ResliceHiRes)
     {
-    this->Reslice = vtkImageReslice::New();
+		this->ResliceHiRes = vtkImageReslice::New();
     }
+  if (!this->ResliceLowRes)
+  {
+	  this->ResliceLowRes = vtkImageReslice::New();
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -868,7 +891,6 @@ void myResliceCursorRepresentation::PrintSelf(ostream& os, vtkIndent indent)
     }
   os << indent << "PlaneSource: " << this->PlaneSource << "\n";
   vtkPrintMemberObjectMacro( ThicknessLabelFormat, os, indent );
-  vtkPrintMemberObjectMacro( Reslice, os, indent );
   vtkPrintMemberObjectMacro( ThicknessTextProperty, os, indent );
   vtkPrintMemberObjectMacro( ThicknessTextMapper, os, indent );
   vtkPrintMemberObjectMacro( ThicknessTextActor, os, indent );

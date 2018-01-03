@@ -547,7 +547,7 @@ double *myResliceCursorLineRepresentation::GetBounds()
 
   if (myResliceCursor *r = this->GetResliceCursor())
     {
-    r->GetImage()->GetBounds(this->InitialBounds);
+    r->GetImageHiRes()->GetBounds(this->InitialBounds);
     }
 
   //vtkBoundingBox *bb = new vtkBoundingBox();
