@@ -170,7 +170,7 @@ void MPRView::SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSm
 
 Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes){
 	imagemHiRes = imgHiRes;
-	imagemLowRes = imgHiRes;
+	imagemLowRes = imgLowRes;
 	mprs[0] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 0);
 	mprs[1] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 1);
 	mprs[2] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 2);
@@ -207,8 +207,8 @@ void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void
 
 myResliceCursorCallback::myResliceCursorCallback()
 	:isUsingLowRes(false){
-	ww = 350;
-	wl = 150;
+	ww = 1000;
+	wl = 1200;
 }
 
 itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator )

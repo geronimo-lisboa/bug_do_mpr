@@ -226,6 +226,7 @@ protected:
   vtkActor2D              * ThicknessTextActor;
   vtkMatrix4x4            * ResliceAxes;
   vtkMatrix4x4            * NewResliceAxes;
+  //Color map é o que fornece a imagem pro actor(ImageActor) ou textura (Texture) de acordo com o tipo de renderização pedida
   vtkImageMapToColors     * ColorMap;
   vtkActor                * TexturePlaneActor;
   vtkTexture              * Texture;

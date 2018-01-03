@@ -92,8 +92,7 @@ myResliceCursorRepresentation::myResliceCursorRepresentation()
   this->LookupTable        = 0;
   this->ColorMap           = vtkImageMapToColors::New();
   this->Texture            = vtkTexture::New();
-  this->Texture->SetInputConnection(
-    this->ColorMap->GetOutputPort());
+  this->Texture->SetInputConnection(this->ColorMap->GetOutputPort());
   this->Texture->SetInterpolate(1);
   this->TexturePlaneActor  = vtkActor::New();
 
@@ -104,8 +103,7 @@ myResliceCursorRepresentation::myResliceCursorRepresentation()
   this->ColorMap->PassAlphaToOutputOn();
 
   vtkPolyDataMapper* texturePlaneMapper = vtkPolyDataMapper::New();
-  texturePlaneMapper->SetInputConnection(
-    this->PlaneSource->GetOutputPort());
+  texturePlaneMapper->SetInputConnection(this->PlaneSource->GetOutputPort());
   texturePlaneMapper->SetResolveCoincidentTopologyToPolygonOffset();
 
   this->Texture->SetQualityTo32Bit();
@@ -121,8 +119,7 @@ myResliceCursorRepresentation::myResliceCursorRepresentation()
 
   this->UseImageActor = false;
   this->ImageActor = vtkImageActor::New();
-  this->ImageActor->GetMapper()->SetInputConnection(
-    this->ColorMap->GetOutputPort());
+  this->ImageActor->GetMapper()->SetInputConnection(this->ColorMap->GetOutputPort());
 
   // Represent the text: annotation for cursor position and W/L
 
@@ -145,14 +142,12 @@ myResliceCursorRepresentation::~myResliceCursorRepresentation()
   if (this->ResliceLowRes){
 	  this->ResliceLowRes->Delete();
   }
-
   this->PlaneSource->Delete();
   this->ResliceAxes->Delete();
   this->NewResliceAxes->Delete();
-  if ( this->LookupTable )
-    {
-    this->LookupTable->UnRegister(this);
-    }
+  if ( this->LookupTable ){
+	  this->LookupTable->UnRegister(this);
+  }
   this->ColorMap->Delete();
   this->Texture->Delete();
   this->TexturePlaneActor->Delete();
@@ -162,6 +157,7 @@ myResliceCursorRepresentation::~myResliceCursorRepresentation()
 //----------------------------------------------------------------------
 void myResliceCursorRepresentation::SetLookupTable(vtkScalarsToColors *l)
 {
+  //é aqui que seto a lookup table do mapeador escalar-cor
   vtkSetObjectBodyMacro(LookupTable, vtkScalarsToColors, l);
   this->LookupTable = l;
   if (this->ColorMap)
@@ -593,8 +589,12 @@ void myResliceCursorRepresentation::SetResliceParameters( double outputSpacingX,
 	vtkImageData::SafeDownCast(resliceHiRes->GetInput())->
       GetScalarRange( range );
 	resliceHiRes->SetBackgroundLevel(range[0]);
-
+	//É aqui que eu ligo o color map ao resultado do reslice
 	this->ColorMap->SetInputConnection(resliceHiRes->GetOutputPort());
+
+	int *dims = vtkImageData::SafeDownCast(resliceHiRes->GetInput())->GetDimensions();
+	std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
+
 	resliceHiRes->TransformInputSamplingOff();
 	resliceHiRes->AutoCropOutputOn();
 	resliceHiRes->SetResliceAxes(this->ResliceAxes);
@@ -609,7 +609,13 @@ void myResliceCursorRepresentation::SetResliceParameters( double outputSpacingX,
 	  double range[2];
 	  vtkImageData::SafeDownCast(resliceLowRes->GetInput())->GetScalarRange(range);
 	  resliceLowRes->SetBackgroundLevel(range[0]);
+	  //É aqui que eu ligo o color map
 	  this->ColorMap->SetInputConnection(resliceLowRes->GetOutputPort());
+
+	  int *dims = vtkImageData::SafeDownCast(resliceLowRes->GetInput())->GetDimensions();
+	  std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
+
+
 	  resliceLowRes->TransformInputSamplingOff();
 	  resliceLowRes->AutoCropOutputOn();
 	  resliceLowRes->SetResliceAxes(this->ResliceAxes);

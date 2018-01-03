@@ -53,6 +53,10 @@ void myResliceCursorThickLineRepresentation::SetResliceParameters( double output
 		thickResliceHiRes->SetBackgroundLevel(range[0]);
 		// Set the usual parameters.
 		this->ColorMap->SetInputConnection(thickResliceHiRes->GetOutputPort());
+
+		int *dims = vtkImageData::SafeDownCast(thickResliceHiRes->GetInput())->GetDimensions();
+		std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
+
 		thickResliceHiRes->TransformInputSamplingOff();
 		thickResliceHiRes->SetResliceAxes(this->ResliceAxes);
 		thickResliceHiRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
@@ -75,6 +79,10 @@ void myResliceCursorThickLineRepresentation::SetResliceParameters( double output
 		thickResliceLowRes->SetBackgroundLevel(range[0]);
 		// Set the usual parameters.
 		this->ColorMap->SetInputConnection(thickResliceLowRes->GetOutputPort());
+
+		int *dims = vtkImageData::SafeDownCast(thickResliceLowRes->GetInput())->GetDimensions();
+		std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << std::endl;
+
 		thickResliceLowRes->TransformInputSamplingOff();
 		thickResliceLowRes->SetResliceAxes(this->ResliceAxes);
 		thickResliceLowRes->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
