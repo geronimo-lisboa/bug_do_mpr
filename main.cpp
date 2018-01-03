@@ -27,6 +27,11 @@
 #include "boost/assert.hpp"
 #include "itkResampleImageFilter.h"
 #include "itkOrientImageFilter.h"
+
+#include <vtkWin32OpenGLRenderWindow.h>
+#include <vtkOpenGLRenderer.h>
+#include <vtkTextActor.h>
+#include <vtkTextProperty.h>
 using namespace std;
 
 using boost::lexical_cast;
@@ -66,6 +71,7 @@ private:
 	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
 	vtkSmartPointer<myResliceCursor> sharedCursor;
 	myResliceCursorCallback *resliceCallback;
+	vtkSmartPointer<vtkTextActor> letraEsquerda, letraDireita, letraCima, letraBaixo;
 public:
 	MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id);
 	vtkSmartPointer<myResliceImageViewer> GetmyResliceImageViewer();
@@ -128,8 +134,10 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	imagemLowRes = imgLowRes;
 	resliceViewer = vtkSmartPointer<myResliceImageViewer>::New();
 	resliceViewer->SetThickMode(1);
-	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-	vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+	vtkSmartPointer<vtkOpenGLRenderer> renderer = vtkSmartPointer<vtkOpenGLRenderer>::New();
+	renderer->SetLayer(0);
+	vtkSmartPointer<vtkWin32OpenGLRenderWindow > renderWindow = vtkSmartPointer<vtkWin32OpenGLRenderWindow >::New();
+	renderWindow->SetNumberOfLayers(2);
 	renderWindow->AddRenderer(renderer);
 	vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
 	interactor->SetRenderWindow(renderWindow);
@@ -154,6 +162,52 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	renderWindow->SetWindowName(nomeDaTela.c_str());
 	renderWindow->Render();
 
+	//
+	vtkSmartPointer<vtkOpenGLRenderer> rendererLetras = vtkSmartPointer<vtkOpenGLRenderer>::New();
+	rendererLetras->SetLayer(1);
+	renderWindow->AddRenderer(rendererLetras);	letraEsquerda = vtkSmartPointer<vtkTextActor>::New();
+	letraEsquerda->SetInput("ESQ");
+	vtkTextProperty* p = letraEsquerda->GetTextProperty();
+	p->SetColor(1, 0, 0);
+	p->SetBackgroundOpacity(0);
+	p->SetFontSize(12);
+	p->BoldOn();
+	p->SetFontFamilyAsString("Arial");
+	letraEsquerda->SetDisplayPosition(0, renderWindow->GetSize()[1] / 2);
+	rendererLetras->AddActor(letraEsquerda);
+
+	letraDireita = vtkSmartPointer<vtkTextActor>::New();
+	letraDireita->SetInput("DIR");
+	p = letraDireita->GetTextProperty();
+	p->SetColor(1, 0, 0);
+	p->SetBackgroundOpacity(0);
+	p->SetFontSize(12);
+	p->BoldOn();
+	p->SetFontFamilyAsString("Arial");
+	letraDireita->SetDisplayPosition(renderWindow->GetSize()[0] / 2, renderWindow->GetSize()[1] - 20);
+	rendererLetras->AddActor(letraDireita);
+
+	letraCima = vtkSmartPointer<vtkTextActor>::New();
+	letraCima->SetInput("CIM");
+	p = letraCima->GetTextProperty();
+	p->SetColor(1, 0, 0);
+	p->SetBackgroundOpacity(0);
+	p->SetFontSize(12);
+	p->BoldOn();
+	p->SetFontFamilyAsString("Arial");
+	letraCima->SetDisplayPosition(renderWindow->GetSize()[0] /2, 20);
+	rendererLetras->AddActor(letraCima);
+
+	letraBaixo = vtkSmartPointer<vtkTextActor>::New();
+	letraBaixo->SetInput("BAI");
+	p = letraBaixo->GetTextProperty();
+	p->SetColor(1, 0, 0);
+	p->SetBackgroundOpacity(0);
+	p->SetFontSize(12);
+	p->BoldOn();
+	p->SetFontFamilyAsString("Arial");
+	letraBaixo->SetDisplayPosition(renderWindow->GetSize()[0] - 20, renderWindow->GetSize()[1] / 2);
+	rendererLetras->AddActor(letraBaixo);
 }
 
 vtkSmartPointer<myResliceImageViewer> MPRView::GetmyResliceImageViewer(){
@@ -194,6 +248,10 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	mprs[0]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c1, c2);
 	mprs[1]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c2);
 	mprs[2]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c1);
+
+	mprs[0]->GetmyResliceImageViewer()->Render();
+	mprs[1]->GetmyResliceImageViewer()->Render();
+	mprs[2]->GetmyResliceImageViewer()->Render();
 }
 
 void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
