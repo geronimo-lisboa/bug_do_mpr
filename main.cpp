@@ -26,12 +26,6 @@
 #include "vtkImageSlabReslice.h"
 #include "boost/assert.hpp"
 #include "itkResampleImageFilter.h"
-#include "itkOrientImageFilter.h"
-
-#include <vtkWin32OpenGLRenderWindow.h>
-#include <vtkOpenGLRenderer.h>
-#include <vtkTextActor.h>
-#include <vtkTextProperty.h>
 using namespace std;
 
 using boost::lexical_cast;
@@ -65,20 +59,18 @@ public:
 	void Execute(vtkObject * caller, unsigned long event, void* calldata);
 };
 
-class MPRView : public IMPRView, public vtkCommand{
+class MPRView : public IMPRView{
 private:
 	vtkSmartPointer<myResliceImageViewer> resliceViewer;
 	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
 	vtkSmartPointer<myResliceCursor> sharedCursor;
 	myResliceCursorCallback *resliceCallback;
-	vtkSmartPointer<vtkTextActor> letraEsquerda, letraDireita, letraCima, letraBaixo;
 public:
 	MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id);
 	vtkSmartPointer<myResliceImageViewer> GetmyResliceImageViewer();
 	void Atualizar();
 	~MPRView(){};
 	void SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<myResliceCursorCallback> rcbk);
-	void Execute(vtkObject * caller, unsigned long ev, void* calldata);
 };
 
 class Sistema{
@@ -101,17 +93,9 @@ int main(int argc, char** argv){
 	const std::vector<std::string> lst = GetList(txtFile); //GetList("C:\\meus dicoms\\mm.txt");//GetList("C:\\meus dicoms\\Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt"); //("C:\\meus dicoms\\mm.txt");//Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt");
 	std::map<std::string, std::string> metadataDaImagem;
 	itk::Image<short, 3>::Pointer versaoHiRes = LoadVolume(metadataDaImagem, lst);
-	//Reorienta a imagem
-	itk::OrientImageFilter<itk::Image<short, 3>, itk::Image<short, 3>>::Pointer orienter = itk::OrientImageFilter<itk::Image<short, 3>, itk::Image<short, 3>>::New();
-	orienter->UseImageDirectionOn();
-	////Consultar https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496eaa5d3197482c4335a63a1ad99d6a9edee para a lista de orientações
-	orienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP);
-	orienter->SetInput(versaoHiRes);
-	orienter->Update();
-	versaoHiRes = orienter->GetOutput();
-
 	//diminuir o tamanho da imagem aqui...
 	itk::Image<short, 3>::Pointer versaoLowRes = CreateLowRes(versaoHiRes);
+
 
 	vtkSmartPointer<vtkImageImport> imagemVtkHiRes = CreateVTKImage(versaoHiRes);
 	vtkSmartPointer<vtkImageImport> imagemVtkLowRes = CreateVTKImage(versaoLowRes);
@@ -128,27 +112,15 @@ int main(int argc, char** argv){
 	//Fim do sistema
 	return EXIT_SUCCESS;
 }
-//----------------------------------------------------------------------------------------------------
-void MPRView::Execute(vtkObject * caller, unsigned long ev, void* calldata){
-	vtkOpenGLRenderer *renderer = vtkOpenGLRenderer::SafeDownCast(caller);
-	if (renderer){
-		letraEsquerda->SetDisplayPosition(0, renderer->GetRenderWindow()->GetSize()[1] / 2);
-		letraDireita->SetDisplayPosition(renderer->GetRenderWindow()->GetSize()[0] / 2, renderer->GetRenderWindow()->GetSize()[1] - 20);
-		letraCima->SetDisplayPosition(renderer->GetRenderWindow()->GetSize()[0] / 2, 20);
-		letraBaixo->SetDisplayPosition(renderer->GetRenderWindow()->GetSize()[0] - 20, renderer->GetRenderWindow()->GetSize()[1] / 2);
-	}
-}
-//----------------------------------------------------------------------------------------------------
+
 MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id){
 	id = _id;
 	imagemHiRes = imgHiRes;
 	imagemLowRes = imgLowRes;
 	resliceViewer = vtkSmartPointer<myResliceImageViewer>::New();
 	resliceViewer->SetThickMode(1);
-	vtkSmartPointer<vtkOpenGLRenderer> renderer = vtkSmartPointer<vtkOpenGLRenderer>::New();
-	renderer->SetLayer(0);
-	vtkSmartPointer<vtkWin32OpenGLRenderWindow > renderWindow = vtkSmartPointer<vtkWin32OpenGLRenderWindow >::New();
-	renderWindow->SetNumberOfLayers(2);
+	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
 	renderWindow->AddRenderer(renderer);
 	vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
 	interactor->SetRenderWindow(renderWindow);
@@ -173,50 +145,6 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	renderWindow->SetWindowName(nomeDaTela.c_str());
 	renderWindow->Render();
 
-	//Criação das letras
-	vtkSmartPointer<vtkOpenGLRenderer> rendererLetras = vtkSmartPointer<vtkOpenGLRenderer>::New();
-	rendererLetras->SetLayer(1);
-	renderWindow->AddRenderer(rendererLetras);	letraEsquerda = vtkSmartPointer<vtkTextActor>::New();
-	letraEsquerda->SetInput("ESQ");
-	vtkTextProperty* p = letraEsquerda->GetTextProperty();
-	p->SetColor(1, 0, 0);
-	p->SetBackgroundOpacity(0);
-	p->SetFontSize(12);
-	p->BoldOn();
-	p->SetFontFamilyAsString("Arial");
-	rendererLetras->AddActor(letraEsquerda);
-
-	letraDireita = vtkSmartPointer<vtkTextActor>::New();
-	letraDireita->SetInput("DIR");
-	p = letraDireita->GetTextProperty();
-	p->SetColor(1, 0, 0);
-	p->SetBackgroundOpacity(0);
-	p->SetFontSize(12);
-	p->BoldOn();
-	p->SetFontFamilyAsString("Arial");
-	rendererLetras->AddActor(letraDireita);
-
-	letraCima = vtkSmartPointer<vtkTextActor>::New();
-	letraCima->SetInput("CIM");
-	p = letraCima->GetTextProperty();
-	p->SetColor(1, 0, 0);
-	p->SetBackgroundOpacity(0);
-	p->SetFontSize(12);
-	p->BoldOn();
-	p->SetFontFamilyAsString("Arial");
-	rendererLetras->AddActor(letraCima);
-
-	letraBaixo = vtkSmartPointer<vtkTextActor>::New();
-	letraBaixo->SetInput("BAI");
-	p = letraBaixo->GetTextProperty();
-	p->SetColor(1, 0, 0);
-	p->SetBackgroundOpacity(0);
-	p->SetFontSize(12);
-	p->BoldOn();
-	p->SetFontFamilyAsString("Arial");
-	rendererLetras->AddActor(letraBaixo);
-	//Pra quando houver render eu reposicionar as paradas
-	rendererLetras->AddObserver(vtkCommand::EndEvent, this);
 }
 
 vtkSmartPointer<myResliceImageViewer> MPRView::GetmyResliceImageViewer(){
@@ -257,10 +185,6 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	mprs[0]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c1, c2);
 	mprs[1]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c2);
 	mprs[2]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c1);
-
-	mprs[0]->GetmyResliceImageViewer()->Render();
-	mprs[1]->GetmyResliceImageViewer()->Render();
-	mprs[2]->GetmyResliceImageViewer()->Render();
 }
 
 void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
