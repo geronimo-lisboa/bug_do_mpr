@@ -67,10 +67,8 @@ myResliceCursor::myResliceCursor()
   this->ImageLowRes	= NULL;
 
   this->PolyData                = vtkPolyData::New();
-  vtkSmartPointer< vtkPoints > points
-    = vtkSmartPointer< vtkPoints >::New();
-  vtkSmartPointer< vtkCellArray > lines
-    = vtkSmartPointer< vtkCellArray >::New();
+  vtkSmartPointer< vtkPoints > points = vtkSmartPointer< vtkPoints >::New();
+  vtkSmartPointer< vtkCellArray > lines = vtkSmartPointer< vtkCellArray >::New();
   this->PolyData->SetPoints(points);
   this->PolyData->SetLines(lines);
 

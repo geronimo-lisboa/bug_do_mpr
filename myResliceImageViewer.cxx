@@ -434,7 +434,8 @@ void myResliceImageViewer::SetInputData(vtkImageData *imgHiRes, vtkImageData *im
 {
 
 	vtkImageData *in = imgHiRes;
-	this->WindowLevel->SetInputData(imgLowRes);
+	//this->WindowLevel->SetInputData(imgLowRes);
+	this->WindowLevel->SetInputData(imgHiRes);
 	this->GetResliceCursor()->SetImages(imgHiRes, imgLowRes);
 	this->GetResliceCursor()->SetCenter(in->GetCenter());
 	this->UpdateDisplayExtent();

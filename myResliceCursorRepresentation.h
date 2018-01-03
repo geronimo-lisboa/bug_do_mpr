@@ -243,6 +243,8 @@ protected:
   int                       UseImageActor;
   char                      TextBuff[128];
   int                       DisplayText;
+  vtkTextProperty		  * OrientationTextProperty;  vtkTextMapper			  * OrientationTextMapper;
+  vtkActor2D			  * OrientationTextActor;
 
   vtkScalarsToColors      * CreateDefaultLookupTable();
   void                      GenerateText();

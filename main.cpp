@@ -210,8 +210,8 @@ void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void
 
 myResliceCursorCallback::myResliceCursorCallback()
 	:isUsingLowRes(false){
-	ww = 1000;
-	wl = 1200;
+	ww = 350;
+	wl = 150;
 }
 
 itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator )

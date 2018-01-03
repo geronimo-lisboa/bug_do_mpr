@@ -211,12 +211,6 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 		rep->ComputeInteractionState(X, Y, 2);
 		rep->SetManipulationMode(myResliceCursorLineRepresentation::RotateBothAxes);
 	}
-	// Modificado para eu poder fazer a rotação dos dois planos e manter o pan
-	// else
-	// {
-	//   rep->SetManipulationMode(myResliceCursorRepresentation::PanAndRotate);
-
-	// }
 
 	if (rep->GetManipulationMode() == myResliceCursorRepresentation::None)
 	{

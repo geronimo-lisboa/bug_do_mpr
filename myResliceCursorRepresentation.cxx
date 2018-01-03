@@ -123,6 +123,16 @@ myResliceCursorRepresentation::myResliceCursorRepresentation()
 
   // Represent the text: annotation for cursor position and W/L
 
+  letraEsquerda = vtkSmartPointer<vtkTextActor>::New();
+  letraEsquerda->SetInput("");
+  vtkTextProperty* p = letraEsquerda->GetTextProperty();
+  p->SetColor(1, 0, 0);
+  p->SetBackgroundOpacity(0);
+  p->SetFontSize(12);
+  p->BoldOn();
+  p->SetFontFamilyAsString("Arial");
+  letraEsquerda->SetDisplayPosition(100,100);
+
   this->DisplayText = 1;
   this->TextActor = vtkTextActor::New();
   this->GenerateText();
@@ -134,6 +144,11 @@ myResliceCursorRepresentation::~myResliceCursorRepresentation()
   this->ThicknessTextProperty->Delete();
   this->ThicknessTextMapper->Delete();
   this->ThicknessTextActor->Delete();
+
+  this->OrientationTextProperty->Delete();
+  this->OrientationTextMapper->Delete();
+  this->OrientationTextActor->Delete();
+
   this->SetThicknessLabelFormat(0);
   this->ImageActor->Delete();
   if (this->ResliceHiRes){
@@ -811,25 +826,18 @@ void myResliceCursorRepresentation::ActivateText(int i)
 //----------------------------------------------------------------------------
 void myResliceCursorRepresentation::ManageTextDisplay()
 {
-  if ( !this->DisplayText )
-    {
+  if ( !this->DisplayText ){
     return;
-    }
-
-  if ( this->ManipulationMode ==
-       myResliceCursorRepresentation::WindowLevelling )
-    {
+  }
+  if ( this->ManipulationMode == myResliceCursorRepresentation::WindowLevelling ){
     sprintf(this->TextBuff,"Window, Level: ( %g, %g )",
             this->CurrentWindow, this->CurrentLevel );
-    }
-  else if (this->ManipulationMode ==
-      myResliceCursorRepresentation::ResizeThickness )
-    {
+  }
+  else if (this->ManipulationMode == myResliceCursorRepresentation::ResizeThickness ){
     // For now all the thickness' are the same anyway.
     sprintf(this->TextBuff,"Reslice Thickness: %g mm",
             this->GetResliceCursor()->GetThickness()[0] );
-    }
-
+  }
   this->TextActor->SetInput(this->TextBuff);
   this->TextActor->Modified();
 }
