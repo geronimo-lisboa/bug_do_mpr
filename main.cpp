@@ -65,7 +65,7 @@ public:
 	void Execute(vtkObject * caller, unsigned long event, void* calldata);
 };
 
-class MPRView : public IMPRView{
+class MPRView : public IMPRView, public vtkCommand{
 private:
 	vtkSmartPointer<myResliceImageViewer> resliceViewer;
 	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
@@ -78,6 +78,7 @@ public:
 	void Atualizar();
 	~MPRView(){};
 	void SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<myResliceCursorCallback> rcbk);
+	void Execute(vtkObject * caller, unsigned long ev, void* calldata);
 };
 
 class Sistema{
@@ -127,7 +128,17 @@ int main(int argc, char** argv){
 	//Fim do sistema
 	return EXIT_SUCCESS;
 }
-
+//----------------------------------------------------------------------------------------------------
+void MPRView::Execute(vtkObject * caller, unsigned long ev, void* calldata){
+	vtkOpenGLRenderer *renderer = vtkOpenGLRenderer::SafeDownCast(caller);
+	if (renderer){
+		letraEsquerda->SetDisplayPosition(0, renderer->GetRenderWindow()->GetSize()[1] / 2);
+		letraDireita->SetDisplayPosition(renderer->GetRenderWindow()->GetSize()[0] / 2, renderer->GetRenderWindow()->GetSize()[1] - 20);
+		letraCima->SetDisplayPosition(renderer->GetRenderWindow()->GetSize()[0] / 2, 20);
+		letraBaixo->SetDisplayPosition(renderer->GetRenderWindow()->GetSize()[0] - 20, renderer->GetRenderWindow()->GetSize()[1] / 2);
+	}
+}
+//----------------------------------------------------------------------------------------------------
 MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id){
 	id = _id;
 	imagemHiRes = imgHiRes;
@@ -162,7 +173,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	renderWindow->SetWindowName(nomeDaTela.c_str());
 	renderWindow->Render();
 
-	//
+	//Criação das letras
 	vtkSmartPointer<vtkOpenGLRenderer> rendererLetras = vtkSmartPointer<vtkOpenGLRenderer>::New();
 	rendererLetras->SetLayer(1);
 	renderWindow->AddRenderer(rendererLetras);	letraEsquerda = vtkSmartPointer<vtkTextActor>::New();
@@ -173,7 +184,6 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	p->SetFontSize(12);
 	p->BoldOn();
 	p->SetFontFamilyAsString("Arial");
-	letraEsquerda->SetDisplayPosition(0, renderWindow->GetSize()[1] / 2);
 	rendererLetras->AddActor(letraEsquerda);
 
 	letraDireita = vtkSmartPointer<vtkTextActor>::New();
@@ -184,7 +194,6 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	p->SetFontSize(12);
 	p->BoldOn();
 	p->SetFontFamilyAsString("Arial");
-	letraDireita->SetDisplayPosition(renderWindow->GetSize()[0] / 2, renderWindow->GetSize()[1] - 20);
 	rendererLetras->AddActor(letraDireita);
 
 	letraCima = vtkSmartPointer<vtkTextActor>::New();
@@ -195,7 +204,6 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	p->SetFontSize(12);
 	p->BoldOn();
 	p->SetFontFamilyAsString("Arial");
-	letraCima->SetDisplayPosition(renderWindow->GetSize()[0] /2, 20);
 	rendererLetras->AddActor(letraCima);
 
 	letraBaixo = vtkSmartPointer<vtkTextActor>::New();
@@ -206,8 +214,9 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	p->SetFontSize(12);
 	p->BoldOn();
 	p->SetFontFamilyAsString("Arial");
-	letraBaixo->SetDisplayPosition(renderWindow->GetSize()[0] - 20, renderWindow->GetSize()[1] / 2);
 	rendererLetras->AddActor(letraBaixo);
+	//Pra quando houver render eu reposicionar as paradas
+	rendererLetras->AddObserver(vtkCommand::EndEvent, this);
 }
 
 vtkSmartPointer<myResliceImageViewer> MPRView::GetmyResliceImageViewer(){
