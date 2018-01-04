@@ -8,6 +8,7 @@
 #include <vtkCameraPass.h>
 #include <vtkRenderState.h>
 #include <SDL2\SDL_ttf.h>
+#include <string>
 #undef main
 
 #include <SDL2/SDL.h>
@@ -23,6 +24,7 @@ private:
 	vtkSmartPointer<vtkDefaultPass> defaultPass;
 	vtkSmartPointer<vtkRenderPassCollection> passes;
 	vtkSmartPointer<vtkSequencePass> sequencePass;
+	std::string letraEsquerda, letraDireita, letraCima, letraBaixo;
 	myLetraRenderPass();
 	~myLetraRenderPass();
 public:
@@ -30,4 +32,5 @@ public:
 		return new myLetraRenderPass();
 	}
 	void Render(const vtkRenderState* s);
+	void Calculate(vtkRenderer *ren);
 };

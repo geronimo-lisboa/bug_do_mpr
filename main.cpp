@@ -60,7 +60,7 @@ public:
 	void Execute(vtkObject * caller, unsigned long event, void* calldata);
 };
 
-class MPRView : public IMPRView{
+class MPRView : public IMPRView, public vtkCommand{
 private:
 	vtkSmartPointer<myResliceImageViewer> resliceViewer;
 	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
@@ -72,6 +72,7 @@ public:
 	void Atualizar();
 	~MPRView(){};
 	void SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<myResliceCursorCallback> rcbk);
+	void Execute(vtkObject * caller, unsigned long event, void* calldata);
 };
 
 class Sistema{
@@ -114,6 +115,14 @@ int main(int argc, char** argv){
 	return EXIT_SUCCESS;
 }
 
+void MPRView::Execute(vtkObject * caller, unsigned long event, void* calldata){
+	vtkRenderer *ren = vtkRenderer::SafeDownCast(caller);
+	if (ren){
+		cout << __FUNCTION__ << endl;
+		this->resliceViewer->GetRenderPassDasLetras()->Calculate(resliceViewer->GetRenderer());
+	}
+}
+
 MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id){
 	id = _id;
 	imagemHiRes = imgHiRes;
@@ -146,6 +155,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	renderWindow->SetWindowName(nomeDaTela.c_str());
 	renderWindow->Render();
 
+	renderer->AddObserver(vtkCommand::EndEvent, this);
 }
 
 vtkSmartPointer<myResliceImageViewer> MPRView::GetmyResliceImageViewer(){
