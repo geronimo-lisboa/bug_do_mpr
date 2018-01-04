@@ -338,7 +338,6 @@ void myResliceCursorWidget::EndSelectAction(vtkAbstractWidget *w)
 {
 	myResliceCursorWidget *self = static_cast<myResliceCursorWidget*>(w);
 	myResliceCursorRepresentation *rep = reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
-	cout << "terminou?" << endl;
 	rep->SetUseLowRes(false);//Aumenta minha qualidade
 	for (myQualityControllable *q : self->qualityControllables){//Aumenta as dos outros
 		q->UseHiQuality();
