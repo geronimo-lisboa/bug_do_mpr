@@ -105,10 +105,8 @@ int main(int argc, char** argv){
 	orienter->SetInput(versaoHiRes);
 	orienter->Update();
 	versaoHiRes = orienter->GetOutput();
-
 	//diminuir o tamanho da imagem aqui...
 	itk::Image<short, 3>::Pointer versaoLowRes = CreateLowRes(versaoHiRes);
-
 
 	vtkSmartPointer<vtkImageImport> imagemVtkHiRes = CreateVTKImage(versaoHiRes);
 	vtkSmartPointer<vtkImageImport> imagemVtkLowRes = CreateVTKImage(versaoLowRes);
@@ -129,7 +127,6 @@ int main(int argc, char** argv){
 void MPRView::Execute(vtkObject * caller, unsigned long event, void* calldata){
 	vtkRenderer *ren = vtkRenderer::SafeDownCast(caller);
 	if (ren){
-		cout << __FUNCTION__ << endl;
 		this->resliceViewer->GetRenderPassDasLetras()->Calculate(resliceViewer->GetRenderer());
 	}
 }

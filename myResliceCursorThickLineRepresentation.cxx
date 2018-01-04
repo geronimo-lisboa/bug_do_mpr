@@ -11,6 +11,10 @@
 #include <sstream>
 #include <iostream>
 
+#include "vtkXMLImageDataWriter.h"
+#include "vtkSmartPointer.h"
+#include <boost\lexical_cast.hpp>
+#include "boost/date_time/posix_time/posix_time.hpp"
 vtkStandardNewMacro(myResliceCursorThickLineRepresentation);
 
 
@@ -77,6 +81,14 @@ void myResliceCursorThickLineRepresentation::SetResliceParameters( double output
 	const double minSpacing = std::min(std::min(spacing[0], spacing[1]), spacing[2]);
 	// Set the slab resolution the minimum spacing. Reasonable default
 	thickSlabReslice->SetSlabResolution(minSpacing);
+	//O que acontece se eu gravo o que tá no thickSlabReslice?
+	boost::posix_time::ptime current_date_microseconds = boost::posix_time::microsec_clock::local_time();
+	long milliseconds = current_date_microseconds.time_of_day().total_milliseconds();
+	std::string filename = "c:\\" + boost::lexical_cast<std::string>(milliseconds) + ".vti";
+	vtkSmartPointer<vtkXMLImageDataWriter> debugsave = vtkSmartPointer<vtkXMLImageDataWriter>::New();
+	debugsave->SetFileName(filename.c_str());
+	debugsave->SetInputConnection(thickSlabReslice->GetOutputPort());
+	debugsave->Update();
 }
 
 //----------------------------------------------------------------------

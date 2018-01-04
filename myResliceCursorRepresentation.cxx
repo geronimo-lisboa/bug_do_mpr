@@ -394,19 +394,13 @@ void myResliceCursorRepresentation::ComputeReslicePlaneOrigin()
 //----------------------------------------------------------------------
 void myResliceCursorRepresentation::UpdateReslicePlane()
 {
-	if (!this->GetResliceCursor()->GetImageHiRes() ||
-       !this->TexturePlaneActor->GetVisibility() )
-    {
+  if (!this->GetResliceCursor()->GetImageHiRes() || !this->TexturePlaneActor->GetVisibility() ){
     return;
-    }
-
+  }
   // Reinitialize the reslice plane.. We will recompute everything here.
-  if (this->PlaneSource->GetPoint1()[0] == 0.5 &&
-      this->PlaneSource->GetOrigin()[0] == -0.5)
-    {
+  if (this->PlaneSource->GetPoint1()[0] == 0.5 && this->PlaneSource->GetOrigin()[0] == -0.5){
     this->InitializeReslicePlane();
-    }
-
+  }
   // Calculate appropriate pixel spacing for the reslicing
   //
   // this->GetResliceCursor()->UpdateInformation();
@@ -416,11 +410,8 @@ void myResliceCursorRepresentation::UpdateReslicePlane()
   this->GetResliceCursor()->GetImageHiRes()->GetOrigin(origin);
   int extent[6];
   this->GetResliceCursor()->GetImageHiRes()->GetExtent(extent);
-
-  for (int i = 0; i < 3; i++)
-    {
-    if (extent[2*i] > extent[2*i + 1])
-      {
+  for (int i = 0; i < 3; i++){
+    if (extent[2*i] > extent[2*i + 1]){
       vtkErrorMacro("Invalid extent ["
                     << extent[0] << ", " << extent[1] << ", "
                     << extent[2] << ", " << extent[3] << ", "
@@ -429,9 +420,7 @@ void myResliceCursorRepresentation::UpdateReslicePlane()
       break;
       }
     }
-
-  const int planeOrientation =
-    this->GetCursorAlgorithm()->GetReslicePlaneNormal();
+  const int planeOrientation = this->GetCursorAlgorithm()->GetReslicePlaneNormal();
   vtkPlane *plane = this->GetResliceCursor()->GetPlane(planeOrientation);
   double planeNormal[3];
   plane->GetNormal(planeNormal);
@@ -560,8 +549,7 @@ void myResliceCursorRepresentation::UpdateReslicePlane()
     this->ResliceAxes->Modified();
     }
 
-  this->SetResliceParameters( outputSpacingX, outputSpacingY,
-      extentX, extentY );
+  this->SetResliceParameters( outputSpacingX, outputSpacingY, extentX, extentY );
 }
 
 //----------------------------------------------------------------------------
