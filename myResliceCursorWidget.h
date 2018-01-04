@@ -6,7 +6,7 @@
 #include "vtkInteractionWidgetsModule.h" // For export macro
 #include "vtkAbstractWidget.h"
 #include <vector>
-
+#include "myAfterReslicedImageGeneratedCallback.h"
 class myResliceCursorRepresentation;
 
 class VTKINTERACTIONWIDGETS_EXPORT myResliceCursorWidget : public vtkAbstractWidget, public myQualityControllable
@@ -72,6 +72,8 @@ public:
   virtual void ResetResliceCursor();
 
   void AddQualityControlable(myQualityControllable* q);
+
+  void AddAfterResliceListener(myAfterReslicedImageGeneratedCallback* l);
 protected:
 	myResliceCursorWidget();
 	~myResliceCursorWidget();

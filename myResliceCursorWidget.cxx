@@ -29,6 +29,7 @@ PURPOSE.  See the above copyright notice for more information.
 #include "vtkImageData.h"
 #include "vtkInteractorStyleImage.h"
 #include "vtkImageMapToWindowLevelColors.h"
+#include "myResliceCursorThickLineRepresentation.h"
 
 vtkStandardNewMacro(myResliceCursorWidget);
 
@@ -466,4 +467,9 @@ void myResliceCursorWidget::PrintSelf(ostream& os, vtkIndent indent)
 	// this->ModifierActive;
 	// this->WidgetState;
 
+}
+
+void myResliceCursorWidget::AddAfterResliceListener(myAfterReslicedImageGeneratedCallback* l){
+	myResliceCursorThickLineRepresentation * rep = myResliceCursorThickLineRepresentation::SafeDownCast(this->GetResliceCursorRepresentation());    //GetResliceCursor()->  GetResliceCursor()->AddResliceResultListener(l);
+	rep->AddResliceResultListener(l);
 }

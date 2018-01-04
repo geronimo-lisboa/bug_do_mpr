@@ -27,6 +27,12 @@
 #include "boost/assert.hpp"
 #include "itkResampleImageFilter.h"
 #include "itkOrientImageFilter.h"
+#include "myAfterReslicedImageGeneratedCallback.h"
+#include "vtkXMLImageDataWriter.h"
+#include "vtkSmartPointer.h"
+#include <boost\lexical_cast.hpp>
+#include "boost/date_time/posix_time/posix_time.hpp"
+
 
 using namespace std;
 
@@ -73,17 +79,33 @@ public:
 	void Atualizar();
 	~MPRView(){};
 	void SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<myResliceCursorCallback> rcbk);
-	void Execute(vtkObject * caller, unsigned long event, void* calldata);
+	void Execute(vtkObject * caller, unsigned long event, void* calldata) override;
+	void AddAfterResliceListener(myAfterReslicedImageGeneratedCallback* l){
+		resliceViewer->AddAfterResliceListener(l);
+	}
 };
 
-class Sistema{
+class Sistema : public myAfterReslicedImageGeneratedCallback{
 private:
 	vtkSmartPointer<myResliceCursorCallback> resliceCursorCallback;
 	array<shared_ptr<MPRView>, 3> mprs;
 	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
 public:
 	Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes);
+	void ReslicedImageCreated(int id, vtkImageSlabReslice *slabAlgo) override;
 };
+
+void Sistema::ReslicedImageCreated(int id, vtkImageSlabReslice *slabAlgo){
+	std::cout << __FUNCTION__ << std::endl;
+
+	boost::posix_time::ptime current_date_microseconds = boost::posix_time::microsec_clock::local_time();
+	long milliseconds = current_date_microseconds.time_of_day().total_milliseconds();
+	std::string filename = "c:\\tela "+boost::lexical_cast<std::string>(id)+"-" + boost::lexical_cast<std::string>(milliseconds) + ".vti";
+	vtkSmartPointer<vtkXMLImageDataWriter> debugsave = vtkSmartPointer<vtkXMLImageDataWriter>::New();
+	debugsave->SetFileName(filename.c_str());
+	debugsave->SetInputConnection(slabAlgo->GetOutputPort());
+	debugsave->Update();
+}
 
 int main(int argc, char** argv){
 	//Carrega a imagem.
@@ -206,7 +228,10 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	mprs[2]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c1);
 
 	for (auto m : mprs)
+		m->AddAfterResliceListener(this);
+	for (auto m : mprs)
 		m->GetmyResliceImageViewer()->Render();
+
 }
 
 void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
@@ -259,3 +284,5 @@ itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem,
 	itk::Image<short, 3>::Pointer output = resample->GetOutput();
 	return output;
 }
+
+

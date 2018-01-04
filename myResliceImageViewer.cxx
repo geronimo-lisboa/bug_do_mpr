@@ -627,3 +627,7 @@ void myResliceImageViewer::LinkWithOtherWidgets(myQualityControllable *q1, myQua
 	ResliceCursorWidget->AddQualityControlable(q1);
 	ResliceCursorWidget->AddQualityControlable(q2);
 }
+
+void myResliceImageViewer::AddAfterResliceListener(myAfterReslicedImageGeneratedCallback* l){
+	this->ResliceCursorWidget->AddAfterResliceListener(l);
+}

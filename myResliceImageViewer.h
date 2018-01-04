@@ -8,6 +8,7 @@
 #include "vtkImageViewer2.h"
 #include "myQualityControllable.h"
 #include "myLetraRenderPass.h"
+#include "myAfterReslicedImageGeneratedCallback.h"
 
 class myResliceCursorWidget;
 class myResliceCursor;
@@ -117,6 +118,8 @@ public:
   enum { SliceChangedEvent = 1001 };
 
   void LinkWithOtherWidgets(myQualityControllable *q1, myQualityControllable *q2);
+
+  void AddAfterResliceListener(myAfterReslicedImageGeneratedCallback* l);
 protected:
 	myResliceImageViewer();
 	~myResliceImageViewer();

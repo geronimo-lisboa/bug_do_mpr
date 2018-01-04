@@ -4,6 +4,8 @@
 
 #include "vtkInteractionWidgetsModule.h" // For export macro
 #include "myResliceCursorLineRepresentation.h"
+#include "myAfterReslicedImageGeneratedCallback.h"
+#include <vector>
 
 class VTKINTERACTIONWIDGETS_EXPORT myResliceCursorThickLineRepresentation : public myResliceCursorLineRepresentation//myResliceCursorRepresentation
 {
@@ -32,10 +34,13 @@ public:
       double outputSpacingX, double outputSpacingY,
       int extentX, int extentY );
 
+  void AddResliceResultListener(myAfterReslicedImageGeneratedCallback* l){
+	  this->resliceResultListeners.push_back(l);
+  }
 protected:
 	myResliceCursorThickLineRepresentation();
 	~myResliceCursorThickLineRepresentation();
-
+	std::vector<myAfterReslicedImageGeneratedCallback*> resliceResultListeners;
 private:
 	myResliceCursorThickLineRepresentation(const myResliceCursorThickLineRepresentation&);  //Not implemented
 	void operator=(const myResliceCursorThickLineRepresentation&);  //Not implemented

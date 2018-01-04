@@ -3,5 +3,5 @@
 
 class myAfterReslicedImageGeneratedCallback{
 public:
-	virtual void ReslicedImageCreated(vtkImageSlabReslice *slabAlgo) = 0;
+	virtual void ReslicedImageCreated(int id, vtkImageSlabReslice *slabAlgo) = 0;
 };
