@@ -26,6 +26,7 @@
 #include "vtkImageSlabReslice.h"
 #include "boost/assert.hpp"
 #include "itkResampleImageFilter.h"
+#include "itkOrientImageFilter.h"
 
 using namespace std;
 
@@ -95,6 +96,16 @@ int main(int argc, char** argv){
 	const std::vector<std::string> lst = GetList(txtFile); //GetList("C:\\meus dicoms\\mm.txt");//GetList("C:\\meus dicoms\\Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt"); //("C:\\meus dicoms\\mm.txt");//Distorcao.txt1.2.840.113704.1.111.788.1492526943.13.41.00512512.txt");
 	std::map<std::string, std::string> metadataDaImagem;
 	itk::Image<short, 3>::Pointer versaoHiRes = LoadVolume(metadataDaImagem, lst);
+	//Reorientador - garante que tudo esteja na orientação RIP
+	itk::OrientImageFilter<itk::Image<short, 3>, itk::Image<short, 3>>::Pointer orienter = itk::OrientImageFilter<itk::Image<short, 3>, itk::Image<short, 3>>::New();
+	orienter->UseImageDirectionOn();
+	////Consultar https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496eaa5d3197482c4335a63a1ad99d6a9edee
+	////para a lista de orientações
+	orienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP);
+	orienter->SetInput(versaoHiRes);
+	orienter->Update();
+	versaoHiRes = orienter->GetOutput();
+
 	//diminuir o tamanho da imagem aqui...
 	itk::Image<short, 3>::Pointer versaoLowRes = CreateLowRes(versaoHiRes);
 
@@ -196,6 +207,9 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	mprs[0]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c1, c2);
 	mprs[1]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c2);
 	mprs[2]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c1);
+
+	for (auto m : mprs)
+		m->GetmyResliceImageViewer()->Render();
 }
 
 void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
