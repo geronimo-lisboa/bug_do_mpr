@@ -46,7 +46,7 @@ using boost::bad_lexical_cast;
 
 itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator = 3.0f);
 
-
+#ifdef EXE_BUILD
 int main(int argc, char** argv){
 	//Carrega a imagem.
 	if (argc == 1)
@@ -85,7 +85,7 @@ int main(int argc, char** argv){
 	//Fim do sistema
 	return EXIT_SUCCESS;
 }
-
+#endif
 itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator )
 {
 	itk::Image<short, 3>::SizeType inputSize = imagem->GetLargestPossibleRegion().GetSize();
