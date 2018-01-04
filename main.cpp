@@ -1,5 +1,7 @@
 #include "IMPRView.h"
 #include "myResliceCursorCallback.h"
+#include "MPRView.h"
+#include "Sistema.h"
 
 #include "iostream"
 #include "map"
@@ -45,49 +47,6 @@ using boost::bad_lexical_cast;
 itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator = 3.0f);
 
 
-
-
-
-class MPRView : public IMPRView, public vtkCommand{
-private:
-	vtkSmartPointer<myResliceImageViewer> resliceViewer;
-	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
-	vtkSmartPointer<myResliceCursor> sharedCursor;
-	myResliceCursorCallback *resliceCallback;
-public:
-	MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id);
-	vtkSmartPointer<myResliceImageViewer> GetmyResliceImageViewer();
-	void Atualizar();
-	~MPRView(){};
-	void SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<myResliceCursorCallback> rcbk);
-	void Execute(vtkObject * caller, unsigned long event, void* calldata) override;
-	void AddAfterResliceListener(myAfterReslicedImageGeneratedCallback* l){
-		resliceViewer->AddAfterResliceListener(l);
-	}
-};
-
-class Sistema : public myAfterReslicedImageGeneratedCallback{
-private:
-	vtkSmartPointer<myResliceCursorCallback> resliceCursorCallback;
-	array<shared_ptr<MPRView>, 3> mprs;
-	vtkSmartPointer<vtkImageData> imagemHiRes, imagemLowRes;
-public:
-	Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes);
-	void ReslicedImageCreated(int id, vtkImageSlabReslice *slabAlgo) override;
-};
-
-void Sistema::ReslicedImageCreated(int id, vtkImageSlabReslice *slabAlgo){
-	std::cout << __FUNCTION__ << std::endl;
-
-	//boost::posix_time::ptime current_date_microseconds = boost::posix_time::microsec_clock::local_time();
-	//long milliseconds = current_date_microseconds.time_of_day().total_milliseconds();
-	//std::string filename = "c:\\tela "+boost::lexical_cast<std::string>(id)+"-" + boost::lexical_cast<std::string>(milliseconds) + ".vti";
-	//vtkSmartPointer<vtkXMLImageDataWriter> debugsave = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-	//debugsave->SetFileName(filename.c_str());
-	//debugsave->SetInputConnection(slabAlgo->GetOutputPort());
-	//debugsave->Update();
-}
-
 int main(int argc, char** argv){
 	//Carrega a imagem.
 	if (argc == 1)
@@ -126,95 +85,6 @@ int main(int argc, char** argv){
 	//Fim do sistema
 	return EXIT_SUCCESS;
 }
-
-void MPRView::Execute(vtkObject * caller, unsigned long event, void* calldata){
-	vtkRenderer *ren = vtkRenderer::SafeDownCast(caller);
-	if (ren){
-		this->resliceViewer->GetRenderPassDasLetras()->Calculate(resliceViewer->GetRenderer());
-	}
-}
-
-MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id){
-	id = _id;
-	imagemHiRes = imgHiRes;
-	imagemLowRes = imgLowRes;
-	resliceViewer = vtkSmartPointer<myResliceImageViewer>::New();
-	resliceViewer->SetThickMode(1);
-	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-	vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
-	renderWindow->AddRenderer(renderer);
-	vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-	interactor->SetRenderWindow(renderWindow);
-	resliceViewer->SetRenderWindow(renderWindow);
-	resliceViewer->SetupInteractor(interactor);
-	resliceViewer->SetResliceModeToOblique();
-	resliceViewer->SetInputData(imagemHiRes, imagemLowRes);
-	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
-	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
-	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
-	BOOST_ASSERT((thickSlabReslice != nullptr));//sanity check do cast
-
-	thickSlabReslice->SetSlabModeToMax();//Seta pra mip
-
-	thickSlabReslice->SetSlabNumberOfSlices(10);
-	myResliceCursorLineRepresentation *cursorRepresentation = myResliceCursorLineRepresentation::SafeDownCast(
-		resliceViewer->GetResliceCursorWidget()->GetRepresentation());
-	resliceViewer->GetResliceCursorWidget()->ManageWindowLevelOff();
-	cursorRepresentation->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(id);
-
-	string nomeDaTela = "mpr " + lexical_cast<string>(id);
-	renderWindow->SetWindowName(nomeDaTela.c_str());
-	renderWindow->Render();
-
-	renderer->AddObserver(vtkCommand::EndEvent, this);
-}
-
-vtkSmartPointer<myResliceImageViewer> MPRView::GetmyResliceImageViewer(){
-	return this->resliceViewer;
-}
-
-void MPRView::Atualizar(){
-	resliceViewer->Render();
-}
-
-void MPRView::SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<myResliceCursorCallback> rcbk){
-	resliceCallback = rcbk;
-	sharedCursor = _sharedCursor;
-	resliceViewer->SetResliceCursor(sharedCursor);
-	resliceViewer->GetResliceCursorWidget()->AddObserver(myResliceCursorWidget::ResliceThicknessChangedEvent, resliceCallback);
-	resliceViewer->GetResliceCursorWidget()->AddObserver(myResliceCursorWidget::ResetCursorEvent, resliceCallback);
-	resliceViewer->GetResliceCursorWidget()->AddObserver(myResliceCursorWidget::WindowLevelEvent, resliceCallback);
-	resliceViewer->GetResliceCursorWidget()->AddObserver(myResliceCursorWidget::ResliceAxesChangedEvent, resliceCallback);
-	resliceViewer->GetInteractorStyle()->AddObserver(vtkCommand::WindowLevelEvent, resliceCallback);
-}
-
-Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes){
-	imagemHiRes = imgHiRes;
-	imagemLowRes = imgLowRes;
-	mprs[0] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 0);
-	mprs[1] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 1);
-	mprs[2] = make_shared<MPRView>(imagemHiRes, imagemLowRes, 2);
-	resliceCursorCallback = vtkSmartPointer<myResliceCursorCallback>::New();
-	//Liga os callbacks
-	for (std::shared_ptr<MPRView> m : mprs){
-		m->SetCallbacks(mprs[0]->GetmyResliceImageViewer()->GetResliceCursor(),resliceCursorCallback);
-		resliceCursorCallback->AddMPR(m);
-	}
-	//Liga os controles de qualidade
-	myQualityControllable *c0 = mprs[0]->GetmyResliceImageViewer()->GetResliceCursorWidget(); //ele tb é do do tipo myQualityControllable
-	myQualityControllable *c1 = mprs[1]->GetmyResliceImageViewer()->GetResliceCursorWidget(); //ele tb é do do tipo myQualityControllable
-	myQualityControllable *c2 = mprs[2]->GetmyResliceImageViewer()->GetResliceCursorWidget(); //ele tb é do do tipo myQualityControllable
-	mprs[0]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c1, c2);
-	mprs[1]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c2);
-	mprs[2]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c1);
-
-	for (auto m : mprs)
-		m->AddAfterResliceListener(this);
-	for (auto m : mprs)
-		m->GetmyResliceImageViewer()->Render();
-
-}
-
 
 itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator )
 {
