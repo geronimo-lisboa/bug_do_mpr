@@ -28,3 +28,8 @@ include_directories(${BOOST_INCLUDE_DIR})
 target_link_libraries(teste_mpr "C:/boost_1_64_0/stage/win32/lib/libboost_signals-vc120-mt-1_64.lib")
 target_link_libraries(teste_mpr "C:/boost_1_64_0/stage/win32/lib/libboost_exception-vc120-mt-gd-1_64.lib")
 target_link_libraries(teste_mpr "C:/boost_1_64_0/stage/win32/lib/libboost_locale-vc120-mt-1_64.lib")
+
+#sdl_ttf
+include_directories("C:/libs/SDL2_ttf-2.0.14/include")
+target_link_libraries(teste_mpr "C:/libs/SDL2_ttf-2.0.14/lib/x86/SDL2_ttf.lib")
+
