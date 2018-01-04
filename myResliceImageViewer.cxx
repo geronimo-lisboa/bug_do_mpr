@@ -13,7 +13,7 @@
 
 =========================================================================*/
 #include "myResliceImageViewer.h"
-
+#include "vtkOpenGLRenderer.h"
 #include "vtkCamera.h"
 #include "vtkCommand.h"
 #include "vtkImageActor.h"
@@ -96,8 +96,7 @@ myResliceImageViewer::myResliceImageViewer()
 
   vtkSmartPointer< myResliceCursorLineRepresentation > resliceCursorRep = vtkSmartPointer< myResliceCursorLineRepresentation >::New();
   resliceCursorRep->GetResliceCursorActor()->GetCursorAlgorithm()->SetResliceCursor(resliceCursor);
-  resliceCursorRep->GetResliceCursorActor()->
-      GetCursorAlgorithm()->SetReslicePlaneNormal(this->SliceOrientation);
+  resliceCursorRep->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(this->SliceOrientation);
   this->ResliceCursorWidget->SetRepresentation(resliceCursorRep);
 
   this->PointPlacer = vtkBoundedPlanePointPlacer::New();
@@ -110,6 +109,10 @@ myResliceImageViewer::myResliceImageViewer()
   this->SliceScrollOnMouseWheel = 1;
 
   this->InstallPipeline();
+  //Criação do renderpass pras letras
+  vtkOpenGLRenderer *glRen = vtkOpenGLRenderer::SafeDownCast(this->Renderer);
+  RenderPassDasLetras = myLetraRenderPass::New();
+  glRen->SetPass(RenderPassDasLetras);
 }
 
 //----------------------------------------------------------------------------
@@ -125,6 +128,11 @@ myResliceImageViewer::~myResliceImageViewer()
 
   this->PointPlacer->Delete();
   this->ScrollCallback->Delete();
+
+  if (RenderPassDasLetras){
+	  RenderPassDasLetras->Delete();
+	  RenderPassDasLetras = nullptr;
+  }
 }
 
 //----------------------------------------------------------------------------

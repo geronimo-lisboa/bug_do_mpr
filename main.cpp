@@ -26,6 +26,7 @@
 #include "vtkImageSlabReslice.h"
 #include "boost/assert.hpp"
 #include "itkResampleImageFilter.h"
+
 using namespace std;
 
 using boost::lexical_cast;

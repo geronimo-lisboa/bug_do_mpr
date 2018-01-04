@@ -7,6 +7,7 @@
 #include "vtkInteractionImageModule.h" // For export macro
 #include "vtkImageViewer2.h"
 #include "myQualityControllable.h"
+#include "myLetraRenderPass.h"
 
 class myResliceCursorWidget;
 class myResliceCursor;
@@ -106,6 +107,8 @@ public:
   vtkGetMacro( SliceScrollOnMouseWheel, int );
   vtkBooleanMacro( SliceScrollOnMouseWheel, int );
 
+  vtkGetObjectMacro(RenderPassDasLetras, myLetraRenderPass);
+
   // Description:
   // Increment/Decrement slice by 'n' slices
   virtual void IncrementSlice( int n );
@@ -136,7 +139,7 @@ protected:
   myResliceImageViewerMeasurements * Measurements;
   int                                 SliceScrollOnMouseWheel;
   myResliceImageViewerScrollCallback * ScrollCallback;
-
+  myLetraRenderPass				     * RenderPassDasLetras;
 
 private:
 	myResliceImageViewer(const myResliceImageViewer&);  // Not implemented.

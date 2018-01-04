@@ -30,6 +30,6 @@ target_link_libraries(teste_mpr "C:/boost_1_64_0/stage/win32/lib/libboost_except
 target_link_libraries(teste_mpr "C:/boost_1_64_0/stage/win32/lib/libboost_locale-vc120-mt-1_64.lib")
 
 #sdl_ttf
-include_directories("C:/libs/SDL2_ttf-2.0.14/include")
+#include_directories("C:/libs/SDL2_ttf-2.0.14/include")
 target_link_libraries(teste_mpr "C:/libs/SDL2_ttf-2.0.14/lib/x86/SDL2_ttf.lib")
 
