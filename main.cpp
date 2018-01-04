@@ -1,3 +1,6 @@
+#include "IMPRView.h"
+#include "myResliceCursorCallback.h"
+
 #include "iostream"
 #include "map"
 #include "string"
@@ -41,31 +44,9 @@ using boost::bad_lexical_cast;
 
 itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator = 3.0f);
 
-class IMPRView{
-protected:
-	int id;
-public:
-	int GetId(){ return id; }
-	virtual vtkSmartPointer<myResliceImageViewer> GetmyResliceImageViewer() = 0;
-	virtual void Atualizar() = 0;
-	virtual ~IMPRView(){};
-};
 
-class myResliceCursorCallback : public vtkCommand{
-private:
-	bool isUsingLowRes;
-	vector<shared_ptr<IMPRView>> MPRs;
-	double ww, wl;
-	myResliceCursorCallback();
-public:
-	static myResliceCursorCallback *New(){
-		return new myResliceCursorCallback();
-	}
-	void AddMPR(shared_ptr<IMPRView> m){
-		MPRs.push_back(m);
-	}
-	void Execute(vtkObject * caller, unsigned long event, void* calldata);
-};
+
+
 
 class MPRView : public IMPRView, public vtkCommand{
 private:
@@ -234,31 +215,6 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 
 }
 
-void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
-	AbortFlagOn();
-
-	vtkInteractorStyleImage *i = vtkInteractorStyleImage::SafeDownCast(caller);
-	if (i){//Se isso é verdadeiro é pq é operação de Window/Level
-		int *p1 = i->GetInteractor()->GetEventPosition();
-		int *p2 = i->GetInteractor()->GetLastEventPosition();
-		int dp[2];
-		dp[0] = p1[0] - p2[0];
-		dp[1] = p1[1] - p2[1];
-		ww = ww + dp[0];
-		wl = wl + dp[1];
-	}
-	for (shared_ptr<IMPRView> m : MPRs){
-		m->GetmyResliceImageViewer()->SetColorWindow(ww);
-		m->GetmyResliceImageViewer()->SetColorLevel(wl);
-		m->Atualizar();
-	}
-}
-
-myResliceCursorCallback::myResliceCursorCallback()
-	:isUsingLowRes(false){
-	ww = 350;
-	wl = 150;
-}
 
 itk::Image<short, 3>::Pointer CreateLowRes(itk::Image<short, 3>::Pointer imagem, float fator )
 {
