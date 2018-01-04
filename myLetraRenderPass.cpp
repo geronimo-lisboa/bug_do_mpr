@@ -12,7 +12,7 @@ myLetraRenderPass::myLetraRenderPass(){
 	if (TTF_Init() == -1){
 		BOOST_THROW_EXCEPTION(std::exception(SDL_GetError()));
 	}
-	font = TTF_OpenFont("C:\\Windows\\Fonts\\arial.ttf", 25);
+	font = TTF_OpenFont("C:\\Windows\\Fonts\\arial.ttf", 12);
 	if (!font){
 		BOOST_THROW_EXCEPTION(std::exception(TTF_GetError()));
 	}
@@ -35,6 +35,8 @@ myLetraRenderPass::~myLetraRenderPass(){
 	TTF_Quit();
 }
 
+
+
 void myLetraRenderPass::Render(const vtkRenderState* s){
 	cameraPass->Render(s);//Renderização para a tela
 	vtkOpenGLRenderer* glRen = vtkOpenGLRenderer::SafeDownCast(s->GetRenderer());
@@ -48,20 +50,41 @@ void myLetraRenderPass::Render(const vtkRenderState* s){
 	//Desenha o retangulo
 	SDL_SetRenderDrawColor(canvasSdlRenderer, 0, 0, 255, 0);
 	SDL_Rect rect;
-	rect.x = 10;
-	rect.y = 10;
+	rect.x = 1;
+	rect.y = screenHeight -1;
 	rect.w = 20;
-	rect.h = 30;
+	rect.h = 20;
 	SDL_RenderDrawRect(canvasSdlRenderer, &rect);
-	//Desenha um texto qqer
+	//Desenho das letras
 	SDL_Color color = { 255, 0, 0 };
-	SDL_Surface *surface = TTF_RenderText_Solid(font, "HELLO", color);
-	SDL_Texture * texture = SDL_CreateTextureFromSurface(canvasSdlRenderer, surface);
 	int texW = 0;
 	int texH = 0;
-	SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
-	SDL_Rect dstrect = { 0, 0, texW, texH };
-	SDL_RenderCopy(canvasSdlRenderer, texture, NULL, &dstrect);
+	SDL_Rect dstrect;
+	//Desenha a letra da esquerda
+	SDL_Surface *surfaceEsquerda = TTF_RenderText_Solid(font, "L", color);
+	SDL_Texture * textureEsquerda = SDL_CreateTextureFromSurface(canvasSdlRenderer, surfaceEsquerda);
+	SDL_QueryTexture(textureEsquerda, NULL, NULL, &texW, &texH);
+	dstrect = { 15, screenWidth/2, texW, texH };
+	SDL_RenderCopyEx(canvasSdlRenderer, textureEsquerda, NULL, &dstrect, 0, NULL, SDL_FLIP_VERTICAL);
+	//Desenha a letra da direita
+	SDL_Surface *surfaceDireita = TTF_RenderText_Solid(font, "R", color);
+	SDL_Texture * textureDireita = SDL_CreateTextureFromSurface(canvasSdlRenderer, surfaceDireita);
+	SDL_QueryTexture(textureDireita, NULL, NULL, &texW, &texH);
+	dstrect = { screenWidth-15, screenHeight / 2, texW, texH };
+	SDL_RenderCopyEx(canvasSdlRenderer, textureDireita, NULL, &dstrect, 0, NULL, SDL_FLIP_VERTICAL);
+	//Desenha a letra de cima
+	SDL_Surface *surfaceCima = TTF_RenderText_Solid(font, "C", color);
+	SDL_Texture * textureCima = SDL_CreateTextureFromSurface(canvasSdlRenderer, surfaceCima);
+	SDL_QueryTexture(textureCima, NULL, NULL, &texW, &texH);
+	dstrect = { screenWidth / 2, screenHeight - 15, texW, texH };
+	SDL_RenderCopyEx(canvasSdlRenderer, textureCima, NULL, &dstrect, 0, NULL, SDL_FLIP_VERTICAL);
+	//Desenha a letra de baixo
+	SDL_Surface *surfaceBaixo = TTF_RenderText_Solid(font, "B", color);
+	SDL_Texture * textureBaixo = SDL_CreateTextureFromSurface(canvasSdlRenderer, surfaceBaixo);
+	SDL_QueryTexture(textureBaixo, NULL, NULL, &texW, &texH);
+	dstrect = { screenWidth / 2, 15, texW, texH };
+	SDL_RenderCopyEx(canvasSdlRenderer, textureBaixo, NULL, &dstrect, 0, NULL, SDL_FLIP_VERTICAL);
+
 	//Cópia do buffer do SDL pra imagem da janela da VTK, é aqui que eu aplico os desenhos feitos
 	wnd->SetRGBACharPixelData(0, 0, screenWidth - 1, screenHeight - 1, screenBuffer, 0);
 	//Limpa
