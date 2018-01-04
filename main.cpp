@@ -237,7 +237,6 @@ Sistema::Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 void myResliceCursorCallback::Execute(vtkObject * caller, unsigned long ev, void* calldata){
 	AbortFlagOn();
 
-
 	vtkInteractorStyleImage *i = vtkInteractorStyleImage::SafeDownCast(caller);
 	if (i){//Se isso é verdadeiro é pq é operação de Window/Level
 		int *p1 = i->GetInteractor()->GetEventPosition();
