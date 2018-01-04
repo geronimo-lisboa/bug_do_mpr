@@ -200,11 +200,15 @@ void myResliceCursorWidget::SelectAction(vtkAbstractWidget *w)
 		}
 	}
 	if (interactionState == 4)//CENTER
-	{
+	{//Aqui é o pan
+		rep->SetUseLowRes(true);
+		for (myQualityControllable *q : self->qualityControllables){//reduz as dos outros
+			q->UseLowQuality();
+		}
 		rep->SetManipulationMode(myResliceCursorRepresentation::PanAndRotate);
 	}
 	if (interactionState == 5 || interactionState == 6)//OS DOIS EIXOS
-	{
+	{//Aqui é a rotação dos eixos
 		rep->SetUseLowRes(true);//Reduz a minha qualidade
 		for (myQualityControllable *q : self->qualityControllables){//reduz as dos outros
 			q->UseLowQuality();
@@ -325,11 +329,11 @@ void myResliceCursorWidget::MoveAction(vtkAbstractWidget *w)
 }
 
 //-------------------------------------------------------------------------
+//Quando o reslice ou o pan acabam eles passam por aqui. Então é aqui que eu volto pra alta qualidade
 void myResliceCursorWidget::EndSelectAction(vtkAbstractWidget *w)
 {
 	myResliceCursorWidget *self = static_cast<myResliceCursorWidget*>(w);
 	myResliceCursorRepresentation *rep = reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
-
 	rep->SetUseLowRes(false);//Aumenta minha qualidade
 	for (myQualityControllable *q : self->qualityControllables){//Aumenta as dos outros
 		q->UseHiQuality();

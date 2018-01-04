@@ -98,13 +98,13 @@ public:
 void Sistema::ReslicedImageCreated(int id, vtkImageSlabReslice *slabAlgo){
 	std::cout << __FUNCTION__ << std::endl;
 
-	boost::posix_time::ptime current_date_microseconds = boost::posix_time::microsec_clock::local_time();
-	long milliseconds = current_date_microseconds.time_of_day().total_milliseconds();
-	std::string filename = "c:\\tela "+boost::lexical_cast<std::string>(id)+"-" + boost::lexical_cast<std::string>(milliseconds) + ".vti";
-	vtkSmartPointer<vtkXMLImageDataWriter> debugsave = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-	debugsave->SetFileName(filename.c_str());
-	debugsave->SetInputConnection(slabAlgo->GetOutputPort());
-	debugsave->Update();
+	//boost::posix_time::ptime current_date_microseconds = boost::posix_time::microsec_clock::local_time();
+	//long milliseconds = current_date_microseconds.time_of_day().total_milliseconds();
+	//std::string filename = "c:\\tela "+boost::lexical_cast<std::string>(id)+"-" + boost::lexical_cast<std::string>(milliseconds) + ".vti";
+	//vtkSmartPointer<vtkXMLImageDataWriter> debugsave = vtkSmartPointer<vtkXMLImageDataWriter>::New();
+	//debugsave->SetFileName(filename.c_str());
+	//debugsave->SetInputConnection(slabAlgo->GetOutputPort());
+	//debugsave->Update();
 }
 
 int main(int argc, char** argv){
