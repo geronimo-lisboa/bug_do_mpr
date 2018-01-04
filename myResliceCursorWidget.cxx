@@ -127,7 +127,10 @@ void myResliceCursorWidget::ResizeThicknessAction(vtkAbstractWidget *w)
 	{
 		return;
 	}
-
+	rep->SetUseLowRes(true);
+	for (myQualityControllable *q : self->qualityControllables){//reduz as dos outros
+		q->UseLowQuality();
+	}
 	rep->SetManipulationMode(myResliceCursorRepresentation::ResizeThickness);
 
 	self->GrabFocus(self->EventCallbackCommand);
@@ -329,11 +332,13 @@ void myResliceCursorWidget::MoveAction(vtkAbstractWidget *w)
 }
 
 //-------------------------------------------------------------------------
-//Quando o reslice ou o pan acabam eles passam por aqui. Então é aqui que eu volto pra alta qualidade
+//Quando o reslice ou o pan acabam eles passam por aqui. Então é aqui que eu volto pra alta qualidade.
+//A mudança de tamanho da fatia tb passa por aqui.
 void myResliceCursorWidget::EndSelectAction(vtkAbstractWidget *w)
 {
 	myResliceCursorWidget *self = static_cast<myResliceCursorWidget*>(w);
 	myResliceCursorRepresentation *rep = reinterpret_cast<myResliceCursorRepresentation*>(self->WidgetRep);
+	cout << "terminou?" << endl;
 	rep->SetUseLowRes(false);//Aumenta minha qualidade
 	for (myQualityControllable *q : self->qualityControllables){//Aumenta as dos outros
 		q->UseHiQuality();
