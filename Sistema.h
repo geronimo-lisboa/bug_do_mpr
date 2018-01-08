@@ -24,6 +24,7 @@ public:
 	void LinkEverything();
 	void ResizeWindow(int qual, int w, int h);
 	void SetSlabThickness(int thickness);
+	void Reset();
 	//O = MIP
 	//1 = Composite
 	void SetFuncaoDeRenderizacao(int idFn);

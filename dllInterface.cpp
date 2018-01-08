@@ -29,12 +29,14 @@
 #include <itkOrientImageFilter.h>
 #include "itkCommand.h"
 #include "Sistema.h"
+#include <vtkFileOutputWindow.h>
 using namespace std;
 
 FNCallbackDeCarga funcaoDeExibicaoDoProgressoDaCarga = nullptr;
 itk::Image<short, 3>::Pointer versaoHiRes = nullptr;
 itk::Image<short, 3>::Pointer versaoLowRes = nullptr;
 unique_ptr<Sistema> sistema = nullptr;
+vtkSmartPointer<vtkFileOutputWindow> fileOutputWindow = nullptr;
 class ObserveLoadProgressCommand : public itk::Command
 {
 public:
@@ -63,7 +65,11 @@ itk::Image<short, 3>::Pointer CreateVersaoLowRes(itk::Image<short, 3>::Pointer i
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
-//	cout << __FUNCTION__<<" - " <<fdwReason << endl;
+	if (!fileOutputWindow){
+		vtkSmartPointer<vtkFileOutputWindow> fileOutputWindow = vtkSmartPointer<vtkFileOutputWindow>::New();
+		fileOutputWindow->SetFileName("output.txt");
+		vtkOutputWindow::SetInstance(fileOutputWindow);
+	}
 	return TRUE;
 }
 
@@ -87,6 +93,12 @@ void _stdcall DLL_LoadVolume(const char* pathToFileList) {
 	versaoHiRes = orienter->GetOutput();
 	//diminuir o tamanho da imagem aqui...
 	versaoLowRes = CreateVersaoLowRes(versaoHiRes, 3);
+}
+
+void _stdcall DLL_Reset(){
+	if (sistema){
+		sistema->Reset();
+	}
 }
 
 void _stdcall DLL_SetFuncao(int idFuncao){

@@ -21,6 +21,8 @@ public:
 		resliceViewer->AddAfterResliceListener(l);
 	}
 	void SetToMIP();
-	void SetToComposite();
+	void SetToMean();
+	void SetToMINP();
 	void Resize(int w, int h);
+
 };

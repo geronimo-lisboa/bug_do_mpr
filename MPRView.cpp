@@ -29,21 +29,33 @@ void MPRView::Execute(vtkObject * caller, unsigned long event, void* calldata){
 }
 
 
+
 void MPRView::SetToMIP(){
 	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
 	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
 	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
-	thickSlabReslice->SetSlabModeToMax();
+	thickSlabReslice->SetBlendModeToMax();
 	thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceLowRes());
-	thickSlabReslice->SetSlabModeToMax();
+	thickSlabReslice->SetBlendModeToMax();
 }
-void MPRView::SetToComposite(){
+
+void MPRView::SetToMean(){
 	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
 	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
 	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
-	thickSlabReslice->SetSlabModeToSum();
+	thickSlabReslice->SetBlendModeToMean();
 	thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceLowRes());
-	thickSlabReslice->SetSlabModeToSum();
+	thickSlabReslice->SetBlendModeToMean();
+}
+
+
+void MPRView::SetToMINP(){
+	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
+	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
+	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
+	thickSlabReslice->SetBlendModeToMin();
+	thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceLowRes());
+	thickSlabReslice->SetBlendModeToMin();
 }
 
 MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id, HWND handle){
@@ -69,8 +81,8 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
 	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
 	BOOST_ASSERT((thickSlabReslice != nullptr));//sanity check do cast
-	thickSlabReslice->SetSlabModeToMax();//Seta pra mip
-	thickSlabReslice->SetSlabNumberOfSlices(1);
+	//thickSlabReslice->SetSlabModeToMax();//Seta pra mip
+	//thickSlabReslice->SetSlabNumberOfSlices(1);
 	myResliceCursorLineRepresentation *cursorRepresentation = myResliceCursorLineRepresentation::SafeDownCast(
 		resliceViewer->GetResliceCursorWidget()->GetRepresentation());
 	resliceViewer->GetResliceCursorWidget()->ManageWindowLevelOff();
