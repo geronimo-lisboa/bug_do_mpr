@@ -39,12 +39,18 @@ void Sistema::LinkEverything(){
 	mprs[0]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c1, c2);
 	mprs[1]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c2);
 	mprs[2]->GetmyResliceImageViewer()->LinkWithOtherWidgets(c0, c1);
-	for (auto m : mprs)
+	for (auto m : mprs){
 		m->AddAfterResliceListener(this);
+		m->GetmyResliceImageViewer()->Reset();
+	}
+
 	for (auto m : mprs)
 		m->GetmyResliceImageViewer()->Render();
+
 	for (auto m : mprs)
 		m->Atualizar();
+
+
 }
 
 Sistema::Sistema(){

@@ -59,7 +59,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	cursorRepresentation->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(id);
 	string nomeDaTela = "mpr " + boost::lexical_cast<std::string>(id);
 	renderWindow->SetWindowName(nomeDaTela.c_str());
-	renderWindow->Render();
+	//renderWindow->Render();
 	renderer->AddObserver(vtkCommand::EndEvent, this);
 }
 
@@ -69,6 +69,7 @@ vtkSmartPointer<myResliceImageViewer> MPRView::GetmyResliceImageViewer(){
 
 void MPRView::Atualizar(){
 	resliceViewer->Render();
+
 }
 
 void MPRView::SetCallbacks(vtkSmartPointer<myResliceCursor> _sharedCursor, vtkSmartPointer<myResliceCursorCallback> rcbk){
