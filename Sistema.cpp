@@ -25,7 +25,7 @@ void Sistema::Reset(){
 }
 
 void Sistema::ReslicedImageCreated(int id, vtkImageSlabReslice *slabAlgo){
-	std::cout << __FUNCTION__ << std::endl;
+	//std::cout << __FUNCTION__ << std::endl;
 
 	//boost::posix_time::ptime current_date_microseconds = boost::posix_time::microsec_clock::local_time();
 	//long milliseconds = current_date_microseconds.time_of_day().total_milliseconds();
@@ -41,6 +41,7 @@ void Sistema::ResizeWindow(int qual, int w, int h){
 }
 
 void Sistema::LinkEverything(){
+
 	//Liga os callbacks
 	for (std::shared_ptr<MPRView> m : mprs){
 		m->SetCallbacks(mprs[0]->GetmyResliceImageViewer()->GetResliceCursor(), resliceCursorCallback);
@@ -56,6 +57,11 @@ void Sistema::LinkEverything(){
 	for (auto m : mprs){
 		m->AddAfterResliceListener(this);
 		m->GetmyResliceImageViewer()->Reset();
+	}
+	resliceCursorCallback->SetWL(500, 300);
+	for (std::shared_ptr<MPRView> m : mprs){
+		m->GetmyResliceImageViewer()->SetColorWindow(500);
+		m->GetmyResliceImageViewer()->SetColorLevel(300);
 	}
 	for (auto m : mprs)
 		m->GetmyResliceImageViewer()->Render();

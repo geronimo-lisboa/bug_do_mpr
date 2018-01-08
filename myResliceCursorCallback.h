@@ -20,4 +20,8 @@ public:
 		MPRs.push_back(m);
 	}
 	void Execute(vtkObject * caller, unsigned long event, void* calldata);
+	void SetWL(double _ww, double _wl){
+		this->ww = _ww;
+		this->wl = _wl;
+	}
 };

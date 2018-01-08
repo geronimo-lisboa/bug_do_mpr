@@ -5,7 +5,10 @@
 #include <itkImageSeriesReader.h>
 #include <itkGDCMImageIO.h>
 #include <itkGDCMSeriesFileNames.h>
-
+#include <itkImage.h>
+#include <itkImageSeriesReader.h>
+#include <itkGDCMImageIO.h>
+#include <itkGDCMSeriesFileNames.h>
 #include <string>
 #include <vector>
 #include <itkCommand.h>
@@ -13,18 +16,47 @@
 
 const std::vector<std::string> GetList(std::string path)
 {
-	std::string line;
-	std::vector<std::string>listaDeFatias;
-	std::ifstream myfile(path);
-	if (myfile.is_open())
-	{
-		while (getline(myfile, line))
-		{
-			listaDeFatias.push_back(line);
-		}
-		myfile.close();
-	}
-	return listaDeFatias;
+	typedef itk::Image<short, 3> ImageType;
+	typedef itk::ImageSeriesReader<ImageType> ReaderType;
+	typedef itk::GDCMImageIO ImageIOType;
+	typedef itk::GDCMSeriesFileNames NamesGeneratorType;
+	typedef std::vector< std::string >    SeriesIdContainer;
+	typedef std::vector< std::string > FileNamesContainer;
+	ReaderType::Pointer reader = ReaderType::New();
+	ImageIOType::Pointer imageIOObject = ImageIOType::New();
+	reader->SetImageIO(imageIOObject);
+	NamesGeneratorType::Pointer nameGenerator = NamesGeneratorType::New();
+	nameGenerator->SetUseSeriesDetails(true);
+	nameGenerator->SetDirectory(path);
+	//This list has all the images in the directory
+	SeriesIdContainer seriesUID = nameGenerator->GetSeriesUIDs();
+	//The files that contains each of the individual slices that define an image.
+	FileNamesContainer fileNames = nameGenerator->GetFileNames(seriesUID[0]);
+	return fileNames;
+	//reader->SetFileNames(fileNames);
+	//try
+	//{
+	//	reader->Update();
+	//	ImageType::Pointer result = reader->GetOutput();
+	//	result->Print(std::cout);//My image, loaded.
+	//}
+	//catch (itk::ExceptionObject& ex)
+	//{
+	//	ex.Print(std::cout);
+	//}
+///////
+	//std::string line;
+	//std::vector<std::string>listaDeFatias;
+	//std::ifstream myfile(path);
+	//if (myfile.is_open())
+	//{
+	//	while (getline(myfile, line))
+	//	{
+	//		listaDeFatias.push_back(line);
+	//	}
+	//	myfile.close();
+	//}
+	//return listaDeFatias;
 }
 
 itk::Image<short, 3>::Pointer LoadVolume(std::map<std::string, std::string> &outputMetadata,
