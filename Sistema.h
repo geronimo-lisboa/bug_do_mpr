@@ -16,4 +16,19 @@ private:
 public:
 	Sistema(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes);
 	void ReslicedImageCreated(int id, vtkImageSlabReslice *slabAlgo) override;
+
+	Sistema();
+	void SetImages(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes);
+	void CreateView(int id);
+	void CreateView(HWND handle, int id);
+	void LinkEverything();
+	void ResizeWindow(int qual, int w, int h);
+	//eventos do mouse
+	void MouseMove(UINT nFlags, int x, int y, int qual);
+	void LMouseDown(UINT nFlags, int x, int y, int qual);
+	void LMouseUp(UINT nFlags, int x, int y, int qual);
+	void MMouseDown(UINT nFlags, int x, int y, int qual);
+	void MMouseUp(UINT nFlags, int x, int y, int qual);
+	void RMouseDown(UINT nFlags, int x, int y, int qual);
+	void RMouseUp(UINT nFlags, int x, int y, int qual);
 };

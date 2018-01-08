@@ -14,6 +14,12 @@
 #include <vtkInteractorStyleImage.h>
 #include <vtkImageData.h>
 #include "myResliceCursor.h"
+#include <vtkWin32RenderWindowInteractor.h>
+#include <Windows.h>
+
+void  MPRView::Resize(int w,int  h){
+	this->resliceViewer->GetRenderWindow()->SetSize(w, h);
+}
 
 void MPRView::Execute(vtkObject * caller, unsigned long event, void* calldata){
 	vtkRenderer *ren = vtkRenderer::SafeDownCast(caller);
@@ -22,7 +28,7 @@ void MPRView::Execute(vtkObject * caller, unsigned long event, void* calldata){
 	}
 }
 
-MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id){
+MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id, HWND handle){
 	id = _id;
 	imagemHiRes = imgHiRes;
 	imagemLowRes = imgLowRes;
@@ -30,8 +36,12 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	resliceViewer->SetThickMode(1);
 	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
 	vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+	if (handle){
+		renderWindow->SetWindowId(handle);
+	}
 	renderWindow->AddRenderer(renderer);
-	vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+	vtkSmartPointer<vtkWin32RenderWindowInteractor> interactor = vtkSmartPointer<vtkWin32RenderWindowInteractor>::New();
+	interactor->InstallMessageProcOn();
 	interactor->SetRenderWindow(renderWindow);
 	resliceViewer->SetRenderWindow(renderWindow);
 	resliceViewer->SetupInteractor(interactor);

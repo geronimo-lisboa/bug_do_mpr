@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <itkCommand.h>
 #include <fstream>
 
 const std::vector<std::string> GetList(std::string path)
@@ -27,7 +28,7 @@ const std::vector<std::string> GetList(std::string path)
 }
 
 itk::Image<short, 3>::Pointer LoadVolume(std::map<std::string, std::string> &outputMetadata,
-	const std::vector<std::string> filepaths)
+	const std::vector<std::string> filepaths, itk::Command::Pointer cbk = nullptr)
 {
 	typedef itk::MetaDataDictionary DictionaryType;
 	typedef itk::MetaDataObject< std::string > MetaDataStringType;
@@ -72,6 +73,8 @@ itk::Image<short, 3>::Pointer LoadVolume(std::map<std::string, std::string> &out
 	reader->SetFileNames(foo);
 	try
 	{
+		if (cbk)
+			reader->AddObserver(itk::ProgressEvent(), cbk);
 		reader->Update();
 	}
 	catch (itk::ExceptionObject& ex)
