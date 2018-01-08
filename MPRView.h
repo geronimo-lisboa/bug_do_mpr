@@ -20,6 +20,7 @@ public:
 	void AddAfterResliceListener(myAfterReslicedImageGeneratedCallback* l){
 		resliceViewer->AddAfterResliceListener(l);
 	}
-
+	void SetToMIP();
+	void SetToComposite();
 	void Resize(int w, int h);
 };

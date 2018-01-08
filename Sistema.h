@@ -23,6 +23,10 @@ public:
 	void CreateView(HWND handle, int id);
 	void LinkEverything();
 	void ResizeWindow(int qual, int w, int h);
+	void SetSlabThickness(int thickness);
+	//O = MIP
+	//1 = Composite
+	void SetFuncaoDeRenderizacao(int idFn);
 	//eventos do mouse
 	void MouseMove(UINT nFlags, int x, int y, int qual);
 	void LMouseDown(UINT nFlags, int x, int y, int qual);

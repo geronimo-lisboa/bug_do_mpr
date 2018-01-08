@@ -89,6 +89,12 @@ void _stdcall DLL_LoadVolume(const char* pathToFileList) {
 	versaoLowRes = CreateVersaoLowRes(versaoHiRes, 3);
 }
 
+void _stdcall DLL_SetFuncao(int idFuncao){
+	if (sistema){
+		sistema->SetFuncaoDeRenderizacao(idFuncao);
+	}
+}
+
 void _stdcall DLL_CreateRenderer(HWND handle, int qual){
 	assert(versaoHiRes && versaoLowRes);
 	if (!sistema){
@@ -109,7 +115,8 @@ void _stdcall DLL_ResizeRenderer(int qual, int w, int h){
 }
 
 void _stdcall DLL_SetThickness(int t){
-	assert(false && "não implementado");
+	assert(sistema);
+	sistema->SetSlabThickness(t);
 }
 
 int _stdcall DLL_MouseMove(HWND wnd, UINT nFlags, int X, int Y, int qualPanel, long handleDoSubsistema){

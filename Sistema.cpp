@@ -10,6 +10,7 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkInteractorObserver.h>
 #include <vtkInteractorStyleImage.h>
+#include "myResliceCursor.h"
 
 void Sistema::ReslicedImageCreated(int id, vtkImageSlabReslice *slabAlgo){
 	std::cout << __FUNCTION__ << std::endl;
@@ -43,14 +44,30 @@ void Sistema::LinkEverything(){
 		m->AddAfterResliceListener(this);
 		m->GetmyResliceImageViewer()->Reset();
 	}
-
 	for (auto m : mprs)
 		m->GetmyResliceImageViewer()->Render();
-
 	for (auto m : mprs)
 		m->Atualizar();
+}
 
+void Sistema::SetFuncaoDeRenderizacao(int idFn){
+	for (auto m : mprs){
+		if (idFn == 0){
+			m->SetToMIP();
+		}
+		if (idFn == 1){
+			m->SetToComposite();
+		}
+		m->Atualizar();
+	}
+}
 
+void Sistema::SetSlabThickness(int thickness){
+	for (auto m : mprs){
+		array<double, 3> thick = { { thickness, thickness, thickness } };
+		m->GetmyResliceImageViewer()->GetResliceCursor()->SetThickness(thick.data());
+		m->Atualizar();
+	}
 }
 
 Sistema::Sistema(){

@@ -28,6 +28,24 @@ void MPRView::Execute(vtkObject * caller, unsigned long event, void* calldata){
 	}
 }
 
+
+void MPRView::SetToMIP(){
+	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
+	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
+	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
+	thickSlabReslice->SetSlabModeToMax();
+	thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceLowRes());
+	thickSlabReslice->SetSlabModeToMax();
+}
+void MPRView::SetToComposite(){
+	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
+	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
+	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
+	thickSlabReslice->SetSlabModeToSum();
+	thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceLowRes());
+	thickSlabReslice->SetSlabModeToSum();
+}
+
 MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImageData> imgLowRes, int _id, HWND handle){
 	id = _id;
 	imagemHiRes = imgHiRes;
@@ -52,7 +70,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
 	BOOST_ASSERT((thickSlabReslice != nullptr));//sanity check do cast
 	thickSlabReslice->SetSlabModeToMax();//Seta pra mip
-	thickSlabReslice->SetSlabNumberOfSlices(10);
+	thickSlabReslice->SetSlabNumberOfSlices(1);
 	myResliceCursorLineRepresentation *cursorRepresentation = myResliceCursorLineRepresentation::SafeDownCast(
 		resliceViewer->GetResliceCursorWidget()->GetRepresentation());
 	resliceViewer->GetResliceCursorWidget()->ManageWindowLevelOff();

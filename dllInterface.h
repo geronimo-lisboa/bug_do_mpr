@@ -12,6 +12,7 @@ extern "C"
 	DLL_INTERFACE void _stdcall DLL_LoadVolume(const char* pathToFileList);
 	DLL_INTERFACE void _stdcall DLL_SetCallbackDeCarga(FNCallbackDeCarga cbk);
 	DLL_INTERFACE void _stdcall DLL_SetThickness(int t);
+	DLL_INTERFACE void _stdcall DLL_SetFuncao(int idFuncao);
 
 	DLL_INTERFACE int _stdcall DLL_MouseMove(HWND wnd, UINT nFlags, int X, int Y, int qualPanel, long handleDoSubsistema);
 	DLL_INTERFACE int _stdcall DLL_LMouseDown(HWND wnd, UINT nFlags, int X, int Y, int qualPanel, long handleDoSubsistema);
