@@ -69,7 +69,7 @@ void myResliceCursorThickLineRepresentation::SetResliceParameters( double output
 	thickSlabReslice->SetResliceAxes(this->ResliceAxes);
 	thickSlabReslice->SetOutputSpacing(outputSpacingX, outputSpacingY, 1);
 	thickSlabReslice->SetOutputOrigin(0.5*outputSpacingX, 0.5*outputSpacingY, 0);
-	thickSlabReslice->SetOutputExtent(0, extentX - 1, 0, extentY - 1, 0, 0);
+	thickSlabReslice->SetOutputExtent(0, extentX  - 1, 0, extentY - 1, 0, 0);
 	myResliceCursor *rc = this->GetResliceCursor();
 	thickSlabReslice->SetSlabThickness(rc->GetThickness()[0]);
 	double spacing[3];

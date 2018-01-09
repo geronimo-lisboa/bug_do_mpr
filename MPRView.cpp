@@ -79,6 +79,8 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	resliceViewer->SetInputData(imagemHiRes, imagemLowRes);
 	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
 	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
+	//tl->UseImageActorOff();//teste
+	//tl->RestrictPlaneToVolumeOff();//teste
 	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
 	BOOST_ASSERT((thickSlabReslice != nullptr));//sanity check do cast
 	//thickSlabReslice->SetSlabModeToMax();//Seta pra mip

@@ -344,7 +344,7 @@ void myResliceCursorRepresentation::GetVector2(double v2[3])
 //----------------------------------------------------------------------
 // Compute the origin of the reslice plane prior to transformations.
 //
-void myResliceCursorRepresentation::ComputeReslicePlaneOrigin()
+void myResliceCursorRepresentation::ComputeReslicePlaneOrigin(const double fatorParaPoderCobrirMaisDaImagem)
 {
   double bounds[6];
   this->GetResliceCursor()->GetImageHiRes()->GetBounds(bounds);
@@ -373,21 +373,21 @@ void myResliceCursorRepresentation::ComputeReslicePlaneOrigin()
 
   if ( planeOrientation == 1 )
     {
-    this->PlaneSource->SetOrigin(bounds[0]+offset[0],center[1],bounds[4]+offset[2]);
-    this->PlaneSource->SetPoint1(bounds[1]-offset[0],center[1],bounds[4]+offset[2]);
-    this->PlaneSource->SetPoint2(bounds[0]+offset[0],center[1],bounds[5]-offset[2]);
+		this->PlaneSource->SetOrigin(bounds[0] * fatorParaPoderCobrirMaisDaImagem + offset[0], center[1], bounds[4] * fatorParaPoderCobrirMaisDaImagem + offset[2]);
+		this->PlaneSource->SetPoint1(bounds[1] * fatorParaPoderCobrirMaisDaImagem - offset[0], center[1], bounds[4] * fatorParaPoderCobrirMaisDaImagem + offset[2]);
+		this->PlaneSource->SetPoint2(bounds[0] * fatorParaPoderCobrirMaisDaImagem + offset[0], center[1], bounds[5] * fatorParaPoderCobrirMaisDaImagem - offset[2]);
     }
   else if ( planeOrientation == 2 )
     {
-    this->PlaneSource->SetOrigin(bounds[0]+offset[0],bounds[2]+offset[1],center[2]);
-    this->PlaneSource->SetPoint1(bounds[1]-offset[0],bounds[2]+offset[1],center[2]);
-    this->PlaneSource->SetPoint2(bounds[0]+offset[0],bounds[3]-offset[1],center[2]);
+		this->PlaneSource->SetOrigin(bounds[0] * fatorParaPoderCobrirMaisDaImagem + offset[0], bounds[2] * fatorParaPoderCobrirMaisDaImagem + offset[1], center[2]);
+		this->PlaneSource->SetPoint1(bounds[1] * fatorParaPoderCobrirMaisDaImagem - offset[0], bounds[2] * fatorParaPoderCobrirMaisDaImagem + offset[1], center[2]);
+		this->PlaneSource->SetPoint2(bounds[0] * fatorParaPoderCobrirMaisDaImagem + offset[0], bounds[3] * fatorParaPoderCobrirMaisDaImagem - offset[1], center[2]);
     }
   else if ( planeOrientation == 0 )
     {
-    this->PlaneSource->SetOrigin(center[0],bounds[2]+offset[1],bounds[4]+offset[2]);
-    this->PlaneSource->SetPoint1(center[0],bounds[3]-offset[1],bounds[4]+offset[2]);
-    this->PlaneSource->SetPoint2(center[0],bounds[2]+offset[1],bounds[5]-offset[2]);
+		this->PlaneSource->SetOrigin(center[0], bounds[2] * fatorParaPoderCobrirMaisDaImagem + offset[1], bounds[4] * fatorParaPoderCobrirMaisDaImagem + offset[2]);
+		this->PlaneSource->SetPoint1(center[0], bounds[3] * fatorParaPoderCobrirMaisDaImagem - offset[1], bounds[4] * fatorParaPoderCobrirMaisDaImagem + offset[2]);
+		this->PlaneSource->SetPoint2(center[0], bounds[2] * fatorParaPoderCobrirMaisDaImagem + offset[1], bounds[5] * fatorParaPoderCobrirMaisDaImagem - offset[2]);
     }
 }
 
@@ -424,26 +424,18 @@ void myResliceCursorRepresentation::UpdateReslicePlane()
   vtkPlane *plane = this->GetResliceCursor()->GetPlane(planeOrientation);
   double planeNormal[3];
   plane->GetNormal(planeNormal);
-
-
   // Compute the origin of the reslice plane prior to transformations.
-
   this->ComputeReslicePlaneOrigin();
-
   this->PlaneSource->SetNormal(planeNormal);
   this->PlaneSource->SetCenter(plane->GetOrigin());
-
-
   double planeAxis1[3];
   double planeAxis2[3];
-
 
   double* p1 = this->PlaneSource->GetPoint1();
   double* o =  this->PlaneSource->GetOrigin();
   vtkMath::Subtract( p1, o, planeAxis1 );
   double* p2 = this->PlaneSource->GetPoint2();
   vtkMath::Subtract( p2, o, planeAxis2 );
-
   // The x,y dimensions of the plane
   //
   const double planeSizeX = vtkMath::Normalize(planeAxis1);
@@ -549,6 +541,7 @@ void myResliceCursorRepresentation::UpdateReslicePlane()
     this->ResliceAxes->Modified();
     }
 
+ // cout << "  extentX = " << extentX << " e extentY = " << extentY << endl;
   this->SetResliceParameters( outputSpacingX, outputSpacingY, extentX, extentY );
 }
 
