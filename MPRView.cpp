@@ -16,19 +16,44 @@
 #include "myResliceCursor.h"
 #include <vtkWin32RenderWindowInteractor.h>
 #include <Windows.h>
+#include <vtkOpenGLRenderer.h>
+#include <vtkWin32OpenGLRenderWindow.h>
+#include <vtkRendererCollection.h>
+#include <vtkPropCollection.h>
+#include <vtkImageActor.h>
 
 void  MPRView::Resize(int w,int  h){
 	this->resliceViewer->GetRenderWindow()->SetSize(w, h);
 }
 
 void MPRView::Execute(vtkObject * caller, unsigned long event, void* calldata){
-	vtkRenderer *ren = vtkRenderer::SafeDownCast(caller);
+	vtkOpenGLRenderer *ren = vtkOpenGLRenderer::SafeDownCast(caller);
 	if (ren){
 		this->resliceViewer->GetRenderPassDasLetras()->Calculate(resliceViewer->GetRenderer());
+		if (this->id == 0){
+		ren->GetRenderWindow()->GetRenderers()->InitTraversal();
+		vtkOpenGLRenderer *camadaDaImagem; vtkOpenGLRenderer *camadaDoWidget;
+		for (auto i = 0; i < ren->GetRenderWindow()->GetRenderers()->GetNumberOfItems(); i++){
+			vtkOpenGLRenderer* r = vtkOpenGLRenderer::SafeDownCast(ren->GetRenderWindow()->GetRenderers()->GetNextItemAsObject());
+			if (r->GetLayer() == 0)
+				camadaDaImagem = r;
+			if (r->GetLayer() == 1)
+				camadaDoWidget = r;
+		}
+		cout << camadaDaImagem->GetViewProps()->GetNumberOfItems() << endl;
+		cout << camadaDoWidget->GetViewProps()->GetNumberOfItems() << endl;
+		vtkPropCollection *propCollection = camadaDoWidget->GetViewProps();
+		propCollection->InitTraversal();
+		for (auto i = 0; i < propCollection->GetNumberOfItems(); i++){
+			vtkImageActor *actor = vtkImageActor::SafeDownCast(propCollection->GetNextItemAsObject());
+			if (actor){
+				camadaDaImagem->AddActor2D(actor);
+				ren->GetRenderWindow()->Render();
+			}
+		}
+		}
 	}
 }
-
-
 
 void MPRView::SetToMIP(){
 	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
@@ -48,7 +73,6 @@ void MPRView::SetToMean(){
 	thickSlabReslice->SetBlendModeToMean();
 }
 
-
 void MPRView::SetToMINP(){
 	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
 	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
@@ -62,14 +86,22 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	id = _id;
 	imagemHiRes = imgHiRes;
 	imagemLowRes = imgLowRes;
+
+	vtkSmartPointer<vtkOpenGLRenderer> rendererImagem = vtkSmartPointer<vtkOpenGLRenderer>::New();
+	rendererImagem->SetBackground(1, 0, 0);
+	rendererImagem->SetLayer(0);
+
 	resliceViewer = vtkSmartPointer<myResliceImageViewer>::New();
 	resliceViewer->SetThickMode(1);
-	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-	vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+	vtkSmartPointer<vtkOpenGLRenderer> renderer = vtkSmartPointer<vtkOpenGLRenderer>::New();
+	renderer->SetLayer(1);
+	vtkSmartPointer<vtkWin32OpenGLRenderWindow> renderWindow = vtkSmartPointer<vtkWin32OpenGLRenderWindow>::New();
+	renderWindow->SetNumberOfLayers(2);
 	if (handle){
 		renderWindow->SetWindowId(handle);
 	}
 	renderWindow->AddRenderer(renderer);
+	renderWindow->AddRenderer(rendererImagem);
 	vtkSmartPointer<vtkWin32RenderWindowInteractor> interactor = vtkSmartPointer<vtkWin32RenderWindowInteractor>::New();
 	interactor->InstallMessageProcOn();
 	interactor->SetRenderWindow(renderWindow);
@@ -79,6 +111,7 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	resliceViewer->SetInputData(imagemHiRes, imagemLowRes);
 	vtkWidgetRepresentation *r = resliceViewer->GetResliceCursorWidget()->GetRepresentation();
 	myResliceCursorLineRepresentation *tl = myResliceCursorLineRepresentation::SafeDownCast(r);
+	tl->ShowReslicedImageOff();
 	vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(tl->GetResliceHiRes());
 	BOOST_ASSERT((thickSlabReslice != nullptr));//sanity check do cast
 	//thickSlabReslice->SetSlabModeToMax();//Seta pra mip
@@ -91,6 +124,8 @@ MPRView::MPRView(vtkSmartPointer<vtkImageData> imgHiRes, vtkSmartPointer<vtkImag
 	renderWindow->SetWindowName(nomeDaTela.c_str());
 	//renderWindow->Render();
 	renderer->AddObserver(vtkCommand::EndEvent, this);
+
+
 }
 
 vtkSmartPointer<myResliceImageViewer> MPRView::GetmyResliceImageViewer(){
