@@ -87,6 +87,7 @@ void myResliceCursorWidget::CreateDefaultRepresentation()
 	if (!this->WidgetRep)
 	{
 		this->WidgetRep = myResliceCursorLineRepresentation::New();
+
 	}
 }
 

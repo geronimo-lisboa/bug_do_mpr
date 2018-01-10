@@ -261,7 +261,7 @@ void myResliceCursorRepresentation::InitializeReslicePlane()
   // Initialize the reslice plane origins. Offset should be zero within
   // this function here.
 
-  this->ComputeReslicePlaneOrigin();
+  this->ComputeReslicePlaneOrigin(1);
 
   // Finally reset the camera to whatever orientation they were staring in
 
@@ -425,7 +425,7 @@ void myResliceCursorRepresentation::UpdateReslicePlane()
   double planeNormal[3];
   plane->GetNormal(planeNormal);
   // Compute the origin of the reslice plane prior to transformations.
-  this->ComputeReslicePlaneOrigin();
+  this->ComputeReslicePlaneOrigin(1);
   this->PlaneSource->SetNormal(planeNormal);
   this->PlaneSource->SetCenter(plane->GetOrigin());
   double planeAxis1[3];

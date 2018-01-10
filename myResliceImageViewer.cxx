@@ -97,6 +97,7 @@ myResliceImageViewer::myResliceImageViewer()
   vtkSmartPointer< myResliceCursorLineRepresentation > resliceCursorRep = vtkSmartPointer< myResliceCursorLineRepresentation >::New();
   resliceCursorRep->GetResliceCursorActor()->GetCursorAlgorithm()->SetResliceCursor(resliceCursor);
   resliceCursorRep->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(this->SliceOrientation);
+  resliceCursorRep->ShowReslicedImageOff();//TESTE
   this->ResliceCursorWidget->SetRepresentation(resliceCursorRep);
 
   this->PointPlacer = vtkBoundedPlanePointPlacer::New();

@@ -189,7 +189,7 @@ protected:
 
   // Description:
   // Compute the origin of the planes so as to capture the entire image.
-  virtual void ComputeReslicePlaneOrigin();
+  virtual void ComputeReslicePlaneOrigin(const double fatorParaPoderCobrirMaisDaImagem = 2);
 
   // for negative window values.
   void InvertTable();

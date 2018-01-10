@@ -488,13 +488,11 @@ void myResliceCursorLineRepresentation::SetUserMatrix(vtkMatrix4x4 *m)
 }
 
 //----------------------------------------------------------------------
-int myResliceCursorLineRepresentation
-::RenderOpaqueGeometry(vtkViewport *viewport)
+int myResliceCursorLineRepresentation::RenderOpaqueGeometry(vtkViewport *viewport)
 {
   this->BuildRepresentation();
 
-  const int normalAxis = this->ResliceCursorActor->
-      GetCursorAlgorithm()->GetReslicePlaneNormal();
+  const int normalAxis = this->ResliceCursorActor->GetCursorAlgorithm()->GetReslicePlaneNormal();
 
   // When the reslice plane is changed, update the camera to look at the
   // normal to the reslice plane always.
@@ -512,8 +510,7 @@ int myResliceCursorLineRepresentation
 
   // intersect with the plane to get updated focal point
   double intersectionPos[3], t;
-  this->GetResliceCursor()->GetPlane(normalAxis)->
-    IntersectWithLine(fp, newCamPos, t, intersectionPos);
+  this->GetResliceCursor()->GetPlane(normalAxis)->IntersectWithLine(fp, newCamPos, t, intersectionPos);
   this->Renderer->GetActiveCamera()->SetFocalPoint(intersectionPos);
 
   // Don't clip away any part of the data.
@@ -522,19 +519,16 @@ int myResliceCursorLineRepresentation
   // Now Render all the actors.
 
   int count = 0;
-  if (this->TexturePlaneActor->GetVisibility() && !this->UseImageActor)
-    {
+  if (this->TexturePlaneActor->GetVisibility() && !this->UseImageActor){
     count += this->TexturePlaneActor->RenderOpaqueGeometry(viewport);
-    }
-  if (this->ImageActor->GetVisibility() && this->UseImageActor)
-    {
+  }
+  if (this->ImageActor->GetVisibility() && this->UseImageActor){
     count += this->ImageActor->RenderOpaqueGeometry(viewport);
-    }
+  }
   count += this->ResliceCursorActor->RenderOpaqueGeometry(viewport);
-  if (this->DisplayText && this->TextActor->GetVisibility())
-    {
+  if (this->DisplayText && this->TextActor->GetVisibility()){
     count += this->TextActor->RenderOpaqueGeometry(viewport);
-    }
+  }
 
   return count;
 }
@@ -560,24 +554,17 @@ double *myResliceCursorLineRepresentation::GetBounds()
 }
 
 //-----------------------------------------------------------------------------
-int myResliceCursorLineRepresentation::RenderTranslucentPolygonalGeometry(
-  vtkViewport *viewport)
-{
+int myResliceCursorLineRepresentation::RenderTranslucentPolygonalGeometry(vtkViewport *viewport){
   int count = 0;
-  if (this->TexturePlaneActor->GetVisibility() && !this->UseImageActor)
-    {
-    count +=
-      this->TexturePlaneActor->RenderTranslucentPolygonalGeometry(viewport);
-    }
+  if (this->TexturePlaneActor->GetVisibility() && !this->UseImageActor){
+    count += this->TexturePlaneActor->RenderTranslucentPolygonalGeometry(viewport);
+  }
 
-  if (this->ImageActor->GetVisibility() && this->UseImageActor)
-    {
-    count +=
-      this->ImageActor->RenderTranslucentPolygonalGeometry(viewport);
-    }
+  if (this->ImageActor->GetVisibility() && this->UseImageActor){
+    count += this->ImageActor->RenderTranslucentPolygonalGeometry(viewport);
+  }
 
-  count += this->ResliceCursorActor->
-    RenderTranslucentPolygonalGeometry(viewport);
+  count += this->ResliceCursorActor->RenderTranslucentPolygonalGeometry(viewport);
 
   return count;
 }
